@@ -72,7 +72,8 @@ for (i in 1:n) {
   }
 
 #check presence of particular elements
-table(is.element(test_matrix, 0))
+x = 0
+table(is.element(test_matrix, x))
 
 #fill a vector with the max_value of each row
 max_vect = c()
@@ -99,4 +100,3 @@ for (i in 1:n) {
 for (i in 1:n) {
   test_matrix[i,] = as.integer(test_matrix[i,])
 }
-# test for github
