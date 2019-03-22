@@ -100,3 +100,7 @@ for (i in 1:n) {
 for (i in 1:n) {
   test_matrix[i,] = as.integer(test_matrix[i,])
 }
+
+# create dataframe for format 2
+df2 = data.frame(max_vect, min_vect, avg_vect)
+View(df2)
