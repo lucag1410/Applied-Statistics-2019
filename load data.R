@@ -65,9 +65,4 @@ matplot(t(normalized.time.matrix),t(data.matrix),type='l',col=factor(dip$labels)
 x11()
 matplot(t(normalized.time.matrix),t(data.matrix),type='l',col=factor(dip$labels),ylab='Data, frequency 2',xlab='Normalized time',lty=1)
 
-for (i in 1:length(dip.fdat$data-1)){
-  if(is.element(0, dip.fdat$data[i,])){
-    print(i)
-  }
-}
 
