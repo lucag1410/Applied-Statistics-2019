@@ -19,13 +19,13 @@ dplot(dip.fdat[,3],
       dip$labels,
       normalise = TRUE,
       xlab = "Normalized Time [%]",
-      ylab = "2nd Formant [Hz]", col=rainbow(3),lwd=1.1,main='Third formant',lty=factor(dip.spkr))
+      ylab = "3rd Formant [Hz]", col=rainbow(3),lwd=1.1,main='Third formant',lty=factor(dip.spkr))
 
 dplot(dip.fdat[,4],
       dip$labels,
       normalise = TRUE,
       xlab = "Normalized Time [%]",
-      ylab = "2nd Formant [Hz]", col=rainbow(3),lwd=1.1,main='Fourth formant',lty=factor(dip.spkr))
+      ylab = "4th Formant [Hz]", col=rainbow(3),lwd=1.1,main='Fourth formant',lty=factor(dip.spkr))
 
 
 summary(dip.fdat)
@@ -39,8 +39,12 @@ dim(dip.fdat$ftime)
 # scelta della formante
 formante = 2
 tempi = as.numeric(rownames(dip.fdat$data))
+
 n = 186
-dip.fdat$index #indici inizio e fine delle curve
+
+speech_recognition = dip.fdat
+
+dip.fdat$index #indici di inizio e fine delle curve
 maxlength = max(apply(dip.fdat$index,1,diff)) + 1
 data.matrix = matrix(nrow=n,ncol=maxlength)
 time.matrix = matrix(nrow=n,ncol=maxlength)
@@ -59,48 +63,11 @@ matplot(t(time.matrix),t(data.matrix),type='l',col=factor(dip$labels),ylab='Data
 matplot(t(normalized.time.matrix),t(data.matrix),type='l',col=factor(dip$labels),ylab='Data, frequency 2',xlab='Normalized time',lty=1)
 
 x11()
-matplot(t(normalized.time.matrix),t(test_matrix),type='l',col=factor(dip$labels),ylab='Data, frequency 2',xlab='Normalized time',lty=1)
+matplot(t(normalized.time.matrix),t(data.matrix),type='l',col=factor(dip$labels),ylab='Data, frequency 2',xlab='Normalized time',lty=1)
 
-# ------------------------------------------------------------------
-#define a test_matrix
-test_matrix = data.matrix
-
-#replace wrong measurements (i.e. values 0) with the mean for each row
-for (i in 1:n) {
-  mean_i = mean(test_matrix[i,], na.rm = T)
-  test_matrix[i,][test_matrix[i,]==0] = mean_i
+for (i in 1:length(dip.fdat$data-1)){
+  if(is.element(0, dip.fdat$data[i,])){
+    print(i)
   }
-
-#check presence of particular elements
-x = 0
-table(is.element(test_matrix, x))
-
-#fill a vector with the max_value of each row
-max_vect = c()
-for (i in 1:n) {
-  max_i = max(test_matrix[i,], na.rm = T)
-  max_vect = c(max_vect, max_i)
 }
 
-#fill a vector with the min_value of each row
-min_vect = c()
-for (i in 1:n) {
-  min_i = min(test_matrix[i,], na.rm = T)
-  min_vect = c(min_vect, min_i)
-}
-
-#fill a vector with the mean_value of each row
-mean_vect = c()
-for (i in 1:n) {
-  mean_i = mean(test_matrix[i,], na.rm = T)
-  mean_vect = c(mean_vect, mean_i)
-}
-
-#convert all elements to integer
-for (i in 1:n) {
-  test_matrix[i,] = as.integer(test_matrix[i,])
-}
-
-# create dataframe for format 2
-df2 = data.frame(max_vect, min_vect, avg_vect)
-View(df2)
