@@ -159,7 +159,31 @@ data.aU_Male = speech_data[indeces_aU_Male]
 data.OY_Female = speech_data[indeces_OY_Female]
 data.OY_Male = speech_data[indeces_OY_Male]
 
-data.OY_Female
+# creation of the "average" formant T_AVG
+T_AVG = c()
+for (i in 1:length(speech_data$data[,1])){
+  T_AVG = c(T_AVG, mean(speech_data$data[i,]))
+}
+
+# TODO: the following rows are pretty inefficient,try to change these lines
+temp = speech_data # temp used to preserve our dataset
+temp$data = cbind(speech_data$data, T_AVG)
+avg_formant_data = temp[,5]
+rm(temp) # remove temp since we don't need it anymore
+
+
+
+### to plot the avg formant
+# x11()
+# dplot(avg_formant_data,
+#       dip$labels,
+#       normalise = TRUE,
+#       xlab = "Normalized Time [%]",
+#       ylab = "Avg Formant [Hz]", col=rainbow(3),lwd=1.1,main='Average formant',lty=factor(dip.spkr))
+
+
+### TODO: there is something wrong when plotting the data using specific indices
+### I think that this is due to the fact that I still used dip$labels and not dip$"male labels", for example
 
 
 ### FROM NOW ON THERE ARE NO RELEVANT INFORMATION, I WAS JUST TRYING TO DO SOME ANALYSIS ON THE SECOND FORMANT
