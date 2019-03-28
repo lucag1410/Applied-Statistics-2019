@@ -1,16 +1,16 @@
-###PCA on 2nd Formant
+### PCA on 2nd Formant removing measurment errors
+#We substitute the zeros sampled in the second formant with the mean of that formant
 
 library(emuR)
 
-#____________________________________________________________________________________________________________
-#Create the data frame
-#We have selected as variables:
-#The maximum of every sample
-#The minimum of every sample (problem with zeros)
-#The first value of every sample
-#The last value of eery sample
-#The mean value of every sample
-#The duration of every sample
+#_______________________________________________________________________________________________________________
+
+speech_data = dip.fdat #We generated this variable so the original data won't be modified
+
+#We substitute all the zeros with the mean value of the formant
+for (formant in 1:4){
+  speech_data$data[, formant][speech_data$data[, formant] == 0] = mean(speech_data$data[, formant])
+}
 
 num_of_samples = 186
 
@@ -21,11 +21,11 @@ last_F2 = c()
 avg_F2 = c()
 for (i in 1:num_of_samples)
 {
-  max_F2 = c(max_F2, max(dip.fdat[i,2], na.rm = T))
-  min_F2 = c(min_F2, min(dip.fdat[i,2]$data, na.rm = T))
-  first_F2 = c(first_F2, dip.fdat[i,2]$data[1])
-  last_F2 = c(last_F2, dip.fdat[i,2]$data[length(dip.fdat[i,2]$data)])
-  avg_F2 = c(avg_F2, mean(dip.fdat[i,2]$data, na.rm = T))
+  max_F2 = c(max_F2, max(speech_data[i,2], na.rm = T))
+  min_F2 = c(min_F2, min(speech_data[i,2]$data, na.rm = T))
+  first_F2 = c(first_F2, speech_data[i,2]$data[1])
+  last_F2 = c(last_F2, speech_data[i,2]$data[length(speech_data[i,2]$data)])
+  avg_F2 = c(avg_F2, mean(speech_data[i,2]$data, na.rm = T))
 }
 
 duration_F2 = dip$end - dip$start
@@ -34,17 +34,11 @@ duration_F2 = dip$end - dip$start
 
 data_F2 = data.frame(max_F2, min_F2, first_F2, last_F2, avg_F2, duration_F2)
 
-#Visualize the data
-
-x11()
-plot(data_F2)
-graphics.off()
-
 #____________________________________________________________________________________________________________
 
 ### ----- PCA -----
 
-#Starting with a boxplot
+#Starting with a boxplot of the original data
 
 x11()
 boxplot(scale(data_F2, center = T, scale = F), col = 'gold', las = 2)
@@ -85,9 +79,3 @@ abline(h=0.8, lty=2, col='blue')
 box()
 axis(2,at=0:10/10,labels=0:10/10)
 axis(1,at=1:ncol(data_F2),labels=1:ncol(data_F2),las=2)
-
-#From the last plot it seems that tere are three principal components,
-#but removing zeros from the min vector (they are measuring errors for sure)
-#principal components could be fewer
-# -Substituing zeros with the mean of the formant we can already see that the number
-#  of principal components could be two (see PCAF2-1)-
