@@ -8,6 +8,8 @@ num_of_samples = 186
 num_of_aI_samples = 118
 num_of_aU_samples = 44
 num_of_OY_samples = 24
+num_of_female_samples = 93
+num_of_male_samples = 93
 
 diphtongs_names = unique(dip$labels)
 times = as.numeric(rownames(dip.fdat$data))
@@ -125,34 +127,34 @@ data.OY = speech_data[indices_OY]
 #----------------------------------------------------------------------------------------------------
 # save speakers indices
 
-indices_Female = c()
-indices_Male = c()
+indices_female = c()
+indices_male = c()
 for (i in 1:num_of_samples){
-  if (dip.spkr[i] == '67') indices_Female = c(indices_Female, i)
-  else if (dip.spkr[i] == '68') indices_Male = c(indices_Male, i)
+  if (dip.spkr[i] == '67') indices_female = c(indices_female, i)
+  else if (dip.spkr[i] == '68') indices_male = c(indices_male, i)
 }
 
 # CREATION OF ONE DATASET FOR EACH SPEAKER
-data.Female = speech_data[indices_Female]
-data.Male = speech_data[indices_Male]
+data.female = speech_data[indices_female]
+data.male = speech_data[indices_male]
 
 
 # find indices for each diphtong and for each speaker
 
-indices_aI_Female = intersect(indices_aI, indices_Female)
-indices_aI_Male = intersect(indices_aI, indices_Male)
-indices_aU_Female = intersect(indices_aU, indices_Female)
-indices_aU_Male = intersect(indices_aU, indices_Male)
-indices_OY_Female = intersect(indices_OY, indices_Female)
-indices_OY_Male = intersect(indices_OY, indices_Male)
+indices_aI_female = intersect(indices_aI, indices_female)
+indices_aI_male = intersect(indices_aI, indices_male)
+indices_aU_female = intersect(indices_aU, indices_female)
+indices_aU_male = intersect(indices_aU, indices_male)
+indices_OY_female = intersect(indices_OY, indices_female)
+indices_OY_male = intersect(indices_OY, indices_male)
 
 # CREATION OF ONE DATASET FOR EACH DIPHTONG, FOR EACH SPEAKER
-data.aI_Female = speech_data[indices_aI_Female]
-data.aI_Male = speech_data[indices_aI_Male]
-data.aU_Female = speech_data[indices_aU_Female]
-data.aU_Male = speech_data[indices_aU_Male]
-data.OY_Female = speech_data[indices_OY_Female]
-data.OY_Male = speech_data[indices_OY_Male]
+data.aI_female = speech_data[indices_aI_female]
+data.aI_male = speech_data[indices_aI_male]
+data.aU_female = speech_data[indices_aU_female]
+data.aU_male = speech_data[indices_aU_male]
+data.OY_female = speech_data[indices_OY_female]
+data.OY_male = speech_data[indices_OY_male]
 
 # creation of the "average" formant T_AVG
 T_AVG = c()
@@ -177,29 +179,50 @@ dplot(avg_formant_data,
 
 
 #------------------------------------------------------------------------------------------
-# creation of dataframe with summary statistics for the diphtongs
+# creation of dataframe with summary statistics for the diphtongs, for females and for males
 # I considered only the avg_formant_dataset but we can add columns also for each formant
 
-df_avg = data.frame(
+df_avg_female = data.frame(
   row.names = diphtongs_names, 
-  "Mean" = c(mean(avg_formant_data$data[indices_aI]), 
-             mean(avg_formant_data$data[indices_aU]),
-             mean(avg_formant_data$data[indices_OY])
+  "Mean" = c(mean(avg_formant_data$data[indices_aI_female]), 
+             mean(avg_formant_data$data[indices_aU_female]),
+             mean(avg_formant_data$data[indices_OY_female])
              ),
-  "Std" = c(sd(avg_formant_data$data[indices_aI]), 
-            sd(avg_formant_data$data[indices_aU]),
-            sd(avg_formant_data$data[indices_OY])
+  "Std" = c(sd(avg_formant_data$data[indices_aI_female]), 
+            sd(avg_formant_data$data[indices_aU_female]),
+            sd(avg_formant_data$data[indices_OY_female])
             ),
-  "Max" = c(max(avg_formant_data$data[indices_aI]), 
-            max(avg_formant_data$data[indices_aU]),
-            max(avg_formant_data$data[indices_OY])
+  "Max" = c(max(avg_formant_data$data[indices_aI_female]), 
+            max(avg_formant_data$data[indices_aU_female]),
+            max(avg_formant_data$data[indices_OY_female])
             ),
-  "Min" = c(min(avg_formant_data$data[indices_aI]), 
-            min(avg_formant_data$data[indices_aU]),
-            min(avg_formant_data$data[indices_OY])
+  "Min" = c(min(avg_formant_data$data[indices_aI_female]), 
+            min(avg_formant_data$data[indices_aU_female]),
+            min(avg_formant_data$data[indices_OY_female])
             )
 )
 
+df_avg_male = data.frame(
+  row.names = diphtongs_names, 
+  "Mean" = c(mean(avg_formant_data$data[indices_aI_male]), 
+             mean(avg_formant_data$data[indices_aU_male]),
+             mean(avg_formant_data$data[indices_OY_male])
+  ),
+  "Std" = c(sd(avg_formant_data$data[indices_aI_male]), 
+            sd(avg_formant_data$data[indices_aU_male]),
+            sd(avg_formant_data$data[indices_OY_male])
+  ),
+  "Max" = c(max(avg_formant_data$data[indices_aI_male]), 
+            max(avg_formant_data$data[indices_aU_male]),
+            max(avg_formant_data$data[indices_OY_male])
+  ),
+  "Min" = c(min(avg_formant_data$data[indices_aI_male]), 
+            min(avg_formant_data$data[indices_aU_male]),
+            min(avg_formant_data$data[indices_OY_male])
+  )
+)
+
+# the matrices are overall very similar, except for the Std of aU, which is way larger for the males
 
 #------------------------------------------------------------------------------
 # creation of vector with mean value of the avg_formant for each sample
@@ -222,7 +245,6 @@ plot(mean_samples_avg_formant[indices_aI], col = 'red', pch = 19, legend = 'aI',
 legend(0, max(mean_samples_avg_formant), legend=c('aI', 'aU', 'OY'), col=c("red", 'green', "blue"), lty = 1, cex = 1)
 points(mean_samples_avg_formant[indices_aU], col = 'green', pch = 19, legend = 'aU')
 points(mean_samples_avg_formant[indices_OY], col = 'blue', pch = 19, legend = 'OY')
-
 
 
 ### TODO: there is something wrong when plotting the data using specific indices
