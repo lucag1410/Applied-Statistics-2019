@@ -14,6 +14,11 @@ num_of_male_samples = 93
 diphtongs_names = unique(dip$labels)
 times = as.numeric(rownames(dip.fdat$data))
 
+# creation of colors vector
+color = grDevices::colors()[grep('gr(a|e)y', grDevices::colors(), invert = T)] 
+#pie(rep(1,200), col=sample(color, 200))
+
+
 speech_data = dip.fdat
 # NB speech_data is "our" dataset, I would use this instead of dip.fdat in order to
 # still have the original dataset
@@ -168,6 +173,42 @@ temp$data = cbind(speech_data$data, T_AVG)
 avg_formant_data = temp[,5]
 rm(temp) # remove temp since we don't need it anymore
 
+#--------------------------------------------------------------------------------
+# ratio_F2_F1 is a vector containing the ratio F2/F1 on all the observations (not samples)
+ratio_F2_F1 = c()
+for (i in 1:length(speech_data$data[,1])){
+  ratio_i = speech_data$data[i,2] / speech_data$data[i,1]
+  ratio_F2_F1 = c(ratio_F2_F1, ratio_i)
+}
+#points(ratio_i, col = color[i])
+
+# TODO: the following rows are pretty inefficient,try to change these lines
+temp = speech_data # temp used to preserve our dataset
+temp$data = cbind(speech_data$data, ratio_F2_F1)
+ratio_F2_F1_data = temp[,5]
+rm(temp) # remove temp since we don't need it anymore
+
+
+### plot ratio F2/F1 for a given case (set "chosen_index" to the indices that you want)
+###DA FINIRE
+chosen_indices = indices_OY
+x11()
+plot(x = c(0, max(ratio_F2_F1_data[chosen_indices,]$index[,2] - ratio_F2_F1_data[chosen_indices,]$index[,1])),
+     y = c(0, max(ratio_F2_F1_data[chosen_indices,]$data)), type='n',
+     xlab = 'time', ylab = 'Ratio F2/F1', 
+     main = c('Ratio F2/F1 for diph. ', unique(dip.l[chosen_indices]), 'spkr F'))
+for (i in chosen_indices){
+  rand_color = sample(1:length(color), 1)
+  points(ratio_F2_F1_data[i,]$data, col = rand_color, pch = 19)
+  lines(ratio_F2_F1_data[i,]$data, col = rand_color)
+}
+
+x11()
+plot(ratio_F2_F1_data[chosen_indices[chosen_indices<=93],]$data,
+     xlab = 'time', ylab = 'Ratio F2/F1', 
+     main = c('Ratio F2/F1 for diph. ', unique(dip.l[chosen_indices]), 'spkr F'),
+     col = rainbow(n = 300), pch = 19)
+
 
 ### plot of avg formant
 x11()
@@ -224,7 +265,9 @@ df_avg_male = data.frame(
 
 # the matrices are overall very similar, except for the Std of aU, which is way larger for the males
 
-#------------------------------------------------------------------------------
+
+
+#--------------------------------------------------------------------------------
 # creation of vector with mean value of the avg_formant for each sample
 # basically this vector contains the mean value of each line in the avg_formant graph
 # use the indices in order to have more specific information (e.g. mean_samples_avg_formant[indices_aI])
@@ -241,10 +284,10 @@ for (i in 1:186){
 # I don't think that this is an issue since we are interested in the differences on the y-axis
 
 x11()
-plot(mean_samples_avg_formant[indices_aI], col = 'red', pch = 19, legend = 'aI', ylim = c(1500, max(mean_samples_avg_formant)), ylab = 'Mean sample value from T_AVG')
+plot(mean_samples_avg_formant[indices_aI], col = 'red', pch = 19, ylim = c(1500, max(mean_samples_avg_formant)), ylab = 'Mean sample value from T_AVG')
 legend(0, max(mean_samples_avg_formant), legend=c('aI', 'aU', 'OY'), col=c("red", 'green', "blue"), lty = 1, cex = 1)
-points(mean_samples_avg_formant[indices_aU], col = 'green', pch = 19, legend = 'aU')
-points(mean_samples_avg_formant[indices_OY], col = 'blue', pch = 19, legend = 'OY')
+points(mean_samples_avg_formant[indices_aU], col = 'green', pch = 19)
+points(mean_samples_avg_formant[indices_OY], col = 'blue', pch = 19)
 
 
 ### TODO: there is something wrong when plotting the data using specific indices

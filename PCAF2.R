@@ -8,7 +8,7 @@ library(emuR)
 #The maximum of every sample
 #The minimum of every sample (problem with zeros)
 #The first value of every sample
-#The last value of eery sample
+#The last value of every sample
 #The mean value of every sample
 #The duration of every sample
 
@@ -21,8 +21,8 @@ last_F2 = c()
 avg_F2 = c()
 for (i in 1:num_of_samples)
 {
-  max_F2 = c(max_F2, max(dip.fdat[i,2], na.rm = T))
-  min_F2 = c(min_F2, min(dip.fdat[i,2]$data, na.rm = T))
+  max_F2 = c(max_F2, max(dip.fdat[i,2]$data))
+  min_F2 = c(min_F2, min(dip.fdat[i,2]$data))
   first_F2 = c(first_F2, dip.fdat[i,2]$data[1])
   last_F2 = c(last_F2, dip.fdat[i,2]$data[length(dip.fdat[i,2]$data)])
   avg_F2 = c(avg_F2, mean(dip.fdat[i,2]$data, na.rm = T))
