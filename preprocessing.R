@@ -49,7 +49,6 @@ for (formant in 1:num_of_formants){
   speech_data$data[,formant][speech_data$data[,formant]==0]   = mean(speech_data$data[,formant])
 }
 
-
 # some summary statistics on the dataset
 summary(speech_data)
 dim(speech_data$data)
@@ -75,6 +74,44 @@ for(ii in 1:num_of_samples){
   data.matrix_F3[ii,1:length(time.std)] = speech_data$data[indice.ii[1]:indice.ii[2], 3]
   data.matrix_F4[ii,1:length(time.std)] = speech_data$data[indice.ii[1]:indice.ii[2], 4]
   }
+
+# comparison between T1 and T2 for all the diphtongs for both female and male speakers
+x11()
+layout(matrix(1:6,nrow=3,byrow=T))
+plot(data.OY_female$data, xlim = c(100, 800), ylim = c(550,2800), main='OY_female')
+plot(data.OY_male$data, xlim = c(100, 800),ylim = c(550,2800), main='OY_male')
+plot(data.aU_female$data, xlim = c(100, 900),ylim = c(550,2800), main='aU_female')
+plot(data.aU_male$data, xlim = c(100, 900),ylim = c(550,2800), main='aU_male')
+plot(data.aI_female$data, xlim = c(100, 1000),ylim = c(550,2800), main='aI_female')
+plot(data.aI_male$data, xlim = c(100, 1000),ylim = c(550,2800), main='aI_male')
+graphics.off()
+
+
+formante = 4
+min_f = min(data.OY_female$data[,formante])
+max_f = max(data.OY_female$data[,formante])
+min_m = min(data.OY_male$data[,formante])
+max_m = max(data.OY_male$data[,formante])
+
+min_ov = min(min_f,min_m)
+max_ov = max(max_f, max_m)
+
+x11()
+boxplot(data.OY_female$data[,formante], col = 'gold', ylim = c(min_ov,max_ov), main='OY_female')
+x11()
+boxplot(data.OY_male$data[,formante], col = 'gold', ylim = c(min_ov,max_ov), main='OY_male')
+
+
+x11()
+plot(T_AVG[indices_OY_male], T_AVG[indices_OY_female], xlab = 'OY_male', ylab = 'OY_female',
+        main = 'Comparison of T_AVG between OY_female and OY_male', pch=19)
+x11()
+plot(T_AVG[indices_aU_male], T_AVG[indices_aU_female], xlab = 'aU_male', ylab = 'aU_female',
+     main = 'Comparison of T_AVG between aU_female and aU_male', pch=19)
+x11()
+plot(T_AVG[indices_aI_male], T_AVG[indices_aI_female], xlab = 'aI_male', ylab = 'aI_female',
+     main = 'Comparison of T_AVG between aI_female and aI_male', pch=19)
+
 
 ### plot of formants in the same range of values
 x11()
@@ -180,7 +217,6 @@ for (i in 1:length(speech_data$data[,1])){
   ratio_i = speech_data$data[i,2] / speech_data$data[i,1]
   ratio_F2_F1 = c(ratio_F2_F1, ratio_i)
 }
-#points(ratio_i, col = color[i])
 
 # TODO: the following rows are pretty inefficient,try to change these lines
 temp = speech_data # temp used to preserve our dataset
@@ -190,13 +226,13 @@ rm(temp) # remove temp since we don't need it anymore
 
 
 ### plot ratio F2/F1 for a given case (set "chosen_index" to the indices that you want)
-###DA FINIRE
+###DA FINIRE: C'é QUALCOSA CHE NON VA CON I VALORI MASSIMALI DELLE CURVE (E.G. MAX IN 12 AND NOT IN 4.7)
 chosen_indices = indices_OY
 x11()
-plot(x = c(0, max(ratio_F2_F1_data[chosen_indices,]$index[,2] - ratio_F2_F1_data[chosen_indices,]$index[,1])),
-     y = c(0, max(ratio_F2_F1_data[chosen_indices,]$data)), type='n',
+plot(x = c(0, max(ratio_F2_F1_data$index[,2] - ratio_F2_F1_data$index[,1])),
+     y = c(0, max(ratio_F2_F1_data$data)), type='n',
      xlab = 'time', ylab = 'Ratio F2/F1', 
-     main = c('Ratio F2/F1 for diph. ', unique(dip.l[chosen_indices]), 'spkr F'))
+     main = c('Ratio F2/F1 for diph. ', unique(dip.l[chosen_indices]), 'both spkrs'))
 for (i in chosen_indices){
   rand_color = sample(1:length(color), 1)
   points(ratio_F2_F1_data[i,]$data, col = rand_color, pch = 19)
@@ -205,7 +241,7 @@ for (i in chosen_indices){
 
 x11()
 plot(ratio_F2_F1_data[chosen_indices[chosen_indices<=93],]$data,
-     xlab = 'time', ylab = 'Ratio F2/F1', 
+     xlab = 'Index', ylab = 'Ratio F2/F1', 
      main = c('Ratio F2/F1 for diph. ', unique(dip.l[chosen_indices]), 'spkr F'),
      col = rainbow(n = 300), pch = 19)
 
@@ -289,56 +325,53 @@ legend(0, max(mean_samples_avg_formant), legend=c('aI', 'aU', 'OY'), col=c("red"
 points(mean_samples_avg_formant[indices_aU], col = 'green', pch = 19)
 points(mean_samples_avg_formant[indices_OY], col = 'blue', pch = 19)
 
-
 ### TODO: there is something wrong when plotting the data using specific indices
 ### I think that this is due to the fact that I still used dip$labels and not dip$"male labels", for example
 
 
+#----------------------------------------------------------------------------------
+### creation of complete matrix with all the information from dip.fdat and dip
+library(dplyr) # for operations on dataframes
+# see this link for explanations on the package: https://www.datanovia.com/en/lessons/subset-data-frame-rows-in-r/
 
-### FROM NOW ON THERE ARE NO RELEVANT INFORMATION, I WAS JUST TRYING TO DO SOME ANALYSIS ON THE SECOND FORMANT
-# #------------------------------------------------------------------------------------
-# # creation of vectors with relevant information for F2
-# 
-# #fill a vector with the max_value of each row
-# max_vect_F2 = c()
-# for (i in 1:num_of_samples) {
-#   max_i = max(data.matrix_F2[i,], na.rm = T)
-#   max_vect_F2 = c(max_vect_F2, max_i)
-# }
-# 
-# #fill a vector with the min_value of each row
-# min_vect_F2 = c()
-# for (i in 1:num_of_samples) {
-#   min_i = min(data.matrix_F2[i,], na.rm = T)
-#   min_vect_F2 = c(min_vect_F2, min_i)
-# }
-# 
-# #fill a vector with the mean_value of each row
-# avg_vect_F2 = c()
-# for (i in 1:num_of_samples) {
-#   avg_i = mean(data.matrix_F2[i,], na.rm = T)
-#   avg_vect_F2 = c(avg_vect_F2, avg_i)
-# }
-# 
-# # create vector with duration of each sample
-# duration_vect_F2 = dip$end - dip$start
-# 
-# #----------------------------------------------------------------------------------
-# # Basic Principal Component Analysis
-# 
-# df_F2 = data.frame(max_vect_F2, min_vect_F2, avg_vect_F2, duration_vect_F2)
-# pca = princomp(df_F2, cor = T)
-# 
-# summary(pca)
-# 
-# # testing of new plotting library
-# library(factoextra)
-# 
-# x11()
-# fviz_eig(pca)
-# 
-# fviz_pca_var(pca,
-#              col.var = "contrib",
-#              gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
-#              repel = TRUE     # Avoid text overlapping
-# )
+num_observations = length(dip.fdat[,1]$data)
+#use times for retrieving time indices
+
+#create diphtong labels vector with 5462 values
+diph_vect = c()
+for (i in 1:num_of_samples){
+  label_i = dip$labels[i]
+  diph_vect = c(diph_vect, rep(label_i, length(dip.fdat[i,]$data)/4))
+}
+
+#create speaker vector with 5462 values ('F' for female, 'M' for Male)
+spkr_vect = c()
+for (i in 1:num_of_samples){
+  spkr_i = ifelse(dip.spkr[i] == '67', 'F', 'M')
+  spkr_vect = c(spkr_vect, rep(spkr_i, length(dip.fdat[i,]$data)/4))
+}
+
+#create samples vector with 5462 values
+sample_vect = c()
+for (i in 1:num_of_samples){
+  sample_vect = c(sample_vect, rep(i, length(dip.fdat[i,]$data)/4))
+}
+sample_vect = type.convert(sample_vect)
+
+#creation of the dataframe, we can add more columns with df_complete['newcolumn_name'] = new_column
+df_complete = data.frame(
+  row.names = c(1:num_observations),
+  'sample' = sample_vect,
+  'time' = times,
+  'diphtong' = diph_vect,
+  'speaker' = spkr_vect,
+  'T1' = dip.fdat[,1]$data,
+  'T2' = dip.fdat[,2]$data,
+  'T3' = dip.fdat[,3]$data,
+  'T4' = dip.fdat[,4]$data
+)
+df_complete['T_AVG'] = rowMeans(df_complete %>% select(T1, T2, T3, T4))
+
+# df_complete %>% filter(sample == 1, time < 1300 | time > 1320)
+# dim(df_complete %>% filter(speaker == 'F'))
+# dim(df_complete %>% filter(speaker == 'M'))
