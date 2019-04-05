@@ -371,7 +371,9 @@ df_complete = data.frame(
   'T3' = dip.fdat[,3]$data,
   'T4' = dip.fdat[,4]$data
 )
+df_complete['T2/T1'] = df_complete$T2 / df_complete$T1
 df_complete['T_AVG'] = rowMeans(df_complete %>% select(T1, T2, T3, T4))
+
 
 # df_complete %>% filter(sample == 1, time < 1300 | time > 1320)
 # dim(df_complete %>% filter(speaker == 'F'))
@@ -383,6 +385,6 @@ points(df_complete$T2, col = 'blue')
 points(df_complete$T3, col = 'green')
 points(df_complete$T4, col = 'orange')
 abline(h = c(mean(df_complete$T1),mean(df_complete$T2),mean(df_complete$T3),mean(df_complete$T4)), col = c('red','blue','green','orange'), lwd = 2)
-abline(v = which.max(df_complete[,'speaker'] == 'M'))
+abline(v = which.max(df_complete[,'speaker'] == 'F'))
 legend(x = 0, y = 5500, legend = c("T1","T2","T3","T4"), col = c('red','blue','green','orange'), lty = 1)
 
