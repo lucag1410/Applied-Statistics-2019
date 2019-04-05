@@ -347,7 +347,7 @@ for (i in 1:num_of_samples){
 #create speaker vector with 5462 values ('F' for female, 'M' for Male)
 spkr_vect = c()
 for (i in 1:num_of_samples){
-  spkr_i = ifelse(dip.spkr[i] == '67', 'F', 'M')
+  spkr_i = ifelse(dip.spkr[i] == '67', 'M', 'F')
   spkr_vect = c(spkr_vect, rep(spkr_i, length(dip.fdat[i,]$data)/4))
 }
 
@@ -362,6 +362,7 @@ sample_vect = type.convert(sample_vect)
 df_complete = data.frame(
   row.names = c(1:num_observations),
   'sample' = sample_vect,
+  'observation' = c(1:num_observations),
   'time' = times,
   'diphtong' = diph_vect,
   'speaker' = spkr_vect,
@@ -375,3 +376,13 @@ df_complete['T_AVG'] = rowMeans(df_complete %>% select(T1, T2, T3, T4))
 # df_complete %>% filter(sample == 1, time < 1300 | time > 1320)
 # dim(df_complete %>% filter(speaker == 'F'))
 # dim(df_complete %>% filter(speaker == 'M'))
+
+x11()
+plot(df_complete$T1, xlab = 'Observaton', ylab = 'Formant[Hz]', ylim =  c(0, max(df_complete[,6:9])), col = 'red')
+points(df_complete$T2, col = 'blue')
+points(df_complete$T3, col = 'green')
+points(df_complete$T4, col = 'orange')
+abline(h = c(mean(df_complete$T1),mean(df_complete$T2),mean(df_complete$T3),mean(df_complete$T4)), col = c('red','blue','green','orange'), lwd = 2)
+abline(v = which.max(df_complete[,'speaker'] == 'M'))
+legend(x = 0, y = 5500, legend = c("T1","T2","T3","T4"), col = c('red','blue','green','orange'), lty = 1)
+
