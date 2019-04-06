@@ -206,6 +206,4 @@ for (formant in 1:num_of_formants){
   inter_male_aI$data[,formant][inter_male_aI$data[,formant]==0]   = mean(inter_male_aI$data[,formant])
   inter_male_aU$data[,formant][inter_male_aU$data[,formant]==0]   = mean(inter_male_aU$data[,formant])
   inter_male_Oy$data[,formant][inter_male_Oy$data[,formant]==0]   = mean(inter_male_Oy$data[,formant])
-  
 }
-

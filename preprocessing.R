@@ -332,6 +332,7 @@ points(mean_samples_avg_formant[indices_OY], col = 'blue', pch = 19)
 #----------------------------------------------------------------------------------
 ### creation of complete matrix with all the information from dip.fdat and dip
 library(dplyr) # for operations on dataframes
+library(plyr)  # for vectors handling
 # see this link for explanations on the package: https://www.datanovia.com/en/lessons/subset-data-frame-rows-in-r/
 
 num_observations = length(dip.fdat[,1]$data)
@@ -371,20 +372,56 @@ df_complete = data.frame(
   'T3' = dip.fdat[,3]$data,
   'T4' = dip.fdat[,4]$data
 )
-df_complete['T2/T1'] = df_complete$T2 / df_complete$T1
-df_complete['T_AVG'] = rowMeans(df_complete %>% select(T1, T2, T3, T4))
+
+### creation of sub-dataframes in order to create the dataframe without zeros
+
+df_aI_female = df_complete %>% filter(diphtong == 'aI', speaker == 'F')
+df_aU_female = df_complete %>% filter(diphtong == 'aU', speaker == 'F')
+df_OY_female = df_complete %>% filter(diphtong == 'OY', speaker == 'F')
+df_aI_male = df_complete %>% filter(diphtong == 'aI', speaker == 'M')
+df_aU_male = df_complete %>% filter(diphtong == 'aU', speaker == 'M')
+df_OY_male = df_complete %>% filter(diphtong == 'OY', speaker == 'M')
+
+# for each formant find mean for each pair speaker, dipthong and replace the values in the correct sub-df
+
+for (i in 1:num_of_formants){
+  # compute the means..
+  mean_aI_female = mean((df_complete %>% filter(speaker == 'F', diphtong == 'aI') %>% select(i+5))[,1])
+  mean_aU_female = mean((df_complete %>% filter(speaker == 'F', diphtong == 'aU') %>% select(i+5))[,1])
+  mean_OY_female = mean((df_complete %>% filter(speaker == 'F', diphtong == 'OY') %>% select(i+5))[,1])
+  mean_aI_male = mean((df_complete %>% filter(speaker == 'M', diphtong == 'aI') %>% select(i+5))[,1])
+  mean_aU_male = mean((df_complete %>% filter(speaker == 'M', diphtong == 'aU') %>% select(i+5))[,1])
+  mean_OY_male = mean((df_complete %>% filter(speaker == 'M', diphtong == 'OY') %>% select(i+5))[,1])
+  
+  # and replace the zeros with the correct mean
+  df_aI_female[,i+5] = mapvalues(df_aI_female[,i+5], from= 0, to= mean_aI_female)
+  df_aU_female[,i+5] = mapvalues(df_aU_female[,i+5], from= 0, to= mean_aU_female)
+  df_OY_female[,i+5] = mapvalues(df_OY_female[,i+5], from= 0, to= mean_OY_female)
+  df_aI_male[,i+5] = mapvalues(df_aI_male[,i+5], from= 0, to= mean_aI_male)
+  df_aU_male[,i+5] = mapvalues(df_aU_male[,i+5], from= 0, to= mean_aU_male)
+  df_OY_male[,i+5] = mapvalues(df_OY_male[,i+5], from= 0, to= mean_OY_male)
+}
+
+# creation of the dataframe without null values
+
+df_complete_noZeros = rbind(df_aI_female, df_aI_male, df_OY_female, df_OY_male, df_aU_female, df_aU_male)
+df_complete_noZeros = df_complete_noZeros[order(df_complete_noZeros$observation),]
+rownames(df_complete_noZeros) = seq(1,num_observations)
+
+df_complete_noZeros['T2/T1'] = df_complete_noZeros$T2 / df_complete_noZeros$T1
+df_complete_noZeros['T_AVG'] = rowMeans(df_complete_noZeros %>% select(T1, T2, T3, T4))
 
 
-# df_complete %>% filter(sample == 1, time < 1300 | time > 1320)
-# dim(df_complete %>% filter(speaker == 'F'))
-# dim(df_complete %>% filter(speaker == 'M'))
+# plot 
 
 x11()
-plot(df_complete$T1, xlab = 'Observaton', ylab = 'Formant[Hz]', ylim =  c(0, max(df_complete[,6:9])), col = 'red')
-points(df_complete$T2, col = 'blue')
-points(df_complete$T3, col = 'green')
-points(df_complete$T4, col = 'orange')
-abline(h = c(mean(df_complete$T1),mean(df_complete$T2),mean(df_complete$T3),mean(df_complete$T4)), col = c('red','blue','green','orange'), lwd = 2)
-abline(v = which.max(df_complete[,'speaker'] == 'F'))
-legend(x = 0, y = 5500, legend = c("T1","T2","T3","T4"), col = c('red','blue','green','orange'), lty = 1)
+plot(df_complete_noZeros$T1, xlab = 'Observation', ylab = 'Formant[Hz]', ylim =  c(0, max(df_complete[,6:9])), col = 'red')
+points(df_complete_noZeros$T2, col = 'blue')
+points(df_complete_noZeros$T3, col = 'green')
+points(df_complete_noZeros$T4, col = 'orange')
+abline(h = c(mean(df_complete_noZeros$T1),mean(df_complete_noZeros$T2),mean(df_complete_noZeros$T3),mean(df_complete_noZeros$T4)), col = c('red','blue','green','orange'), lwd = 2)
+abline(v = which.max(df_complete_noZeros[,'speaker'] == 'F'))
+legend(x = 0, y = 5300, legend = c("T1","T2","T3","T4"), col = c('red','blue','green','orange'), lty = 1)
+text(1500,5300, 'Males')
+text(3500,5300, 'Females')
 
