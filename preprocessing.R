@@ -532,5 +532,61 @@ axis(1, 1:3, levels(samples.label[,2]), las=2)
 abline(v=1:3, col='grey', lty=2)
 box()
 
+###
+num_of_interpolations = 60
 
+df_complete_normalized = data.frame(row.names = c(1:(num_of_interpolations*num_of_samples)))
 
+T1_approx = c()
+T2_approx = c()
+T3_approx = c()
+T4_approx = c()
+for (i in 1:num_of_samples){
+  i_T1_approx = approx(df_complete_noZeros[df_complete_noZeros$sample == i,]$T1, n= 60)[2]
+  i_T2_approx = approx(df_complete_noZeros[df_complete_noZeros$sample == i,]$T2, n= 60)[2]
+  i_T3_approx = approx(df_complete_noZeros[df_complete_noZeros$sample == i,]$T3, n= 60)[2]
+  i_T4_approx = approx(df_complete_noZeros[df_complete_noZeros$sample == i,]$T4, n= 60)[2]
+  for (j in i_T1_approx){
+    T1_approx = c(T1_approx,j)
+  }
+  for (j in i_T2_approx){
+    T2_approx = c(T2_approx,j)
+  }
+  for (j in i_T3_approx){
+    T3_approx = c(T3_approx,j)
+  }
+  for (j in i_T4_approx){
+    T4_approx = c(T4_approx,j)
+  }
+}
+
+df_complete_normalized['T1'] = T1_approx
+df_complete_normalized['T2'] = T2_approx
+df_complete_normalized['T3'] = T3_approx
+df_complete_normalized['T4'] = T4_approx
+
+df_sample_normalized_T1 = df_sample[,1:3]
+df_sample_normalized_T2 = df_sample[,1:3]
+df_sample_normalized_T3 = df_sample[,1:3]
+df_sample_normalized_T4 = df_sample[,1:3]
+
+for (i in c(1:186)){
+  df_sample_normalized_T1[i,4:63] = df_complete_normalized[((i-1)*60+1):(i*60),1]
+  df_sample_normalized_T2[i,4:63] = df_complete_normalized[((i-1)*60+1):(i*60),2]
+  df_sample_normalized_T3[i,4:63] = df_complete_normalized[((i-1)*60+1):(i*60),3]
+  df_sample_normalized_T4[i,4:63] = df_complete_normalized[((i-1)*60+1):(i*60),4]
+}
+
+df_sample_normalized_T1 = df_sample_normalized_T1[,c(1:3, 4,10,16,22,28,34,40,46,52,58,63)]
+df_sample_normalized_T2 = df_sample_normalized_T2[,c(1:3, 4,10,16,22,28,34,40,46,52,58,63)]
+df_sample_normalized_T3 = df_sample_normalized_T3[,c(1:3, 4,10,16,22,28,34,40,46,52,58,63)]
+df_sample_normalized_T4 = df_sample_normalized_T4[,c(1:3, 4,10,16,22,28,34,40,46,52,58,63)]
+
+colnames(df_sample_normalized_T1) = c('sample','diphtong','speaker','T1_0%','T1_10%','T1_20%','T1_30%','T1_40%',
+                                               'T1_50%','T1_60%','T1_70%','T1_80%','T1_90%', 'T1_100%')
+colnames(df_sample_normalized_T2) = c('sample','diphtong','speaker','T2_0%','T2_10%','T2_20%','T2_30%','T2_40%',
+                                      'T2_50%','T2_60%','T2_70%','T2_80%','T2_90%', 'T2_100%')
+colnames(df_sample_normalized_T3) = c('sample','diphtong','speaker','T3_0%','T3_10%','T3_20%','T3_30%','T3_40%',
+                                      'T3_50%','T3_60%','T3_70%','T3_80%','T3_90%', 'T3_100%')
+colnames(df_sample_normalized_T4) = c('sample','diphtong','speaker','T4_0%','T4_10%','T4_20%','T4_30%','T4_40%',
+                                      'T4_50%','T4_60%','T4_70%','T4_80%','T4_90%', 'T4_100%')

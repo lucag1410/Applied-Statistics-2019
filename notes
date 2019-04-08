@@ -13,3 +13,12 @@ DATASET PER I SAMPLE
 
 Sarebbe interessante creare un dataframe anche per raccogliere le informazioni principali dei sample (punti massimi e minimi, inizio e fine, ...)
 Il problema è che sarebbe da fare per ogni formante -> grosse dimensioni
+
+
+---COSE DA FARE
+
+- PCA
+possiamo farla su: df_complete_normalized, df_complete_noZeros(?)
+dovremmo farla per ogni dittongo(?), per ogni speaker, per ogni coppia
+...
+
