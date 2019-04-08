@@ -14,14 +14,19 @@ num_of_male_samples = 93
 diphtongs_names = unique(dip$labels)
 times = as.numeric(rownames(dip.fdat$data))
 
-# creation of colors vector
-color = grDevices::colors()[grep('gr(a|e)y', grDevices::colors(), invert = T)] 
-#pie(rep(1,200), col=sample(color, 200))
-
-
 speech_data = dip.fdat
 # NB speech_data is "our" dataset, I would use this instead of dip.fdat in order to
 # still have the original dataset
+
+
+### LOAD DATASETS
+df_complete_noZeros = read.table('../data/df_complete_noZeros.txt')
+df_sample_normalized_T1 = read.table('../data/df_sample_normalized_T1.txt')
+df_sample_normalized_T2 = read.table('../data/df_sample_normalized_T2.txt')
+df_sample_normalized_T3 = read.table('../data/df_sample_normalized_T3.txt')
+df_sample_normalized_T4 = read.table('../data/df_sample_normalized_T4.txt')
+df_sample = read.table('../data/df_sample.txt')
+
 
 
 #-------------------------------------------------------------------------------------------------------------
@@ -49,12 +54,6 @@ for (formant in 1:num_of_formants){
   speech_data$data[,formant][speech_data$data[,formant]==0]   = mean(speech_data$data[,formant])
 }
 
-# some summary statistics on the dataset
-summary(speech_data)
-dim(speech_data$data)
-dim(speech_data$ftime)
-dim(dip)
-
 # creation of time (normalized and standard) and data matrices for all the formants
 maxlength = max(apply(speech_data$index,1,diff)) + 1
 data.matrix_F1 = matrix(nrow=num_of_samples,ncol=maxlength)
@@ -74,16 +73,6 @@ for(ii in 1:num_of_samples){
   data.matrix_F3[ii,1:length(time.std)] = speech_data$data[indice.ii[1]:indice.ii[2], 3]
   data.matrix_F4[ii,1:length(time.std)] = speech_data$data[indice.ii[1]:indice.ii[2], 4]
   }
-
-# comparison between T1 and T2 for all the diphtongs for both female and male speakers
-x11()
-layout(matrix(1:6,nrow=3,byrow=T))
-plot(data.OY_female$data, xlim = c(100, 800), ylim = c(550,2800), main='OY_female')
-plot(data.OY_male$data, xlim = c(100, 800),ylim = c(550,2800), main='OY_male')
-plot(data.aU_female$data, xlim = c(100, 900),ylim = c(550,2800), main='aU_female')
-plot(data.aU_male$data, xlim = c(100, 900),ylim = c(550,2800), main='aU_male')
-plot(data.aI_female$data, xlim = c(100, 1000),ylim = c(550,2800), main='aI_female')
-plot(data.aI_male$data, xlim = c(100, 1000),ylim = c(550,2800), main='aI_male')
 
 
 ### plot of formants in the same range of values
@@ -304,12 +293,12 @@ points(mean_samples_avg_formant[indices_OY], col = 'blue', pch = 19)
 
 #----------------------------------------------------------------------------------
 ### creation of complete matrix with all the information from dip.fdat and dip
+
 library(dplyr) # for operations on dataframes
 library(plyr)  # for vectors handling
-# see this link for explanations on the package: https://www.datanovia.com/en/lessons/subset-data-frame-rows-in-r/
+# see this link for explanations on the package dplyr: https://www.datanovia.com/en/lessons/subset-data-frame-rows-in-r/
 
 num_observations = length(dip.fdat[,1]$data)
-#use times for retrieving time indices
 
 #create diphtong labels vector with 5462 values
 diph_vect = c()
@@ -346,7 +335,7 @@ df_complete = data.frame(
   'T4' = dip.fdat[,4]$data
 )
 
-### creation of sub-dataframes in order to create the dataframe without zeros
+### creation of temporary sub-dataframes in order to create the dataframe without zeros
 
 df_aI_female = df_complete %>% filter(diphtong == 'aI', speaker == 'F')
 df_aU_female = df_complete %>% filter(diphtong == 'aU', speaker == 'F')
@@ -366,7 +355,7 @@ for (i in 1:num_of_formants){
   mean_aU_male = mean((df_complete %>% filter(speaker == 'M', diphtong == 'aU') %>% select(i+5))[,1])
   mean_OY_male = mean((df_complete %>% filter(speaker == 'M', diphtong == 'OY') %>% select(i+5))[,1])
   
-  # and replace the zeros with the correct mean
+  # .. and replace the zeros with the correct mean
   df_aI_female[,i+5] = mapvalues(df_aI_female[,i+5], from= 0, to= mean_aI_female)
   df_aU_female[,i+5] = mapvalues(df_aU_female[,i+5], from= 0, to= mean_aU_female)
   df_OY_female[,i+5] = mapvalues(df_OY_female[,i+5], from= 0, to= mean_OY_female)
@@ -384,6 +373,8 @@ rownames(df_complete_noZeros) = seq(1,num_observations)
 df_complete_noZeros['T2/T1'] = df_complete_noZeros$T2 / df_complete_noZeros$T1
 df_complete_noZeros['T_AVG'] = rowMeans(df_complete_noZeros %>% select(T1, T2, T3, T4))
 
+# dataframes for each pair diphtong-speaker without zeros
+
 df_aI_female_noZeros = filter(df_complete_noZeros, diphtong == 'aI', speaker == 'F')
 df_aU_female_noZeros = filter(df_complete_noZeros, diphtong == 'aU', speaker == 'F')
 df_OY_female_noZeros = filter(df_complete_noZeros, diphtong == 'OY', speaker == 'F')
@@ -398,7 +389,6 @@ plot(df_complete_noZeros$T1, xlab = 'Observation', ylab = 'Formant[Hz]', ylim = 
 points(df_complete_noZeros$T2, col = 'blue')
 points(df_complete_noZeros$T3, col = 'green')
 points(df_complete_noZeros$T4, col = 'orange')
-points(df_complete_noZeros$T_AVG, col = 'gold')
 abline(h = c(mean(df_complete_noZeros$T1),mean(df_complete_noZeros$T2),mean(df_complete_noZeros$T3),mean(df_complete_noZeros$T4)), col = c('red','blue','green','orange'), lwd = 2)
 abline(v = which.max(df_complete_noZeros[,'speaker'] == 'F'))
 legend(x = 0, y = 5300, legend = c("T1","T2","T3","T4"), col = c('red','blue','green','orange'), lty = 1)
@@ -532,7 +522,7 @@ axis(1, 1:3, levels(samples.label[,2]), las=2)
 abline(v=1:3, col='grey', lty=2)
 box()
 
-###
+###  CREATION OF NORMALIZED DATASET FOR EACH FORMANT
 num_of_interpolations = 60
 
 df_complete_normalized = data.frame(row.names = c(1:(num_of_interpolations*num_of_samples)))
@@ -590,3 +580,4 @@ colnames(df_sample_normalized_T3) = c('sample','diphtong','speaker','T3_0%','T3_
                                       'T3_50%','T3_60%','T3_70%','T3_80%','T3_90%', 'T3_100%')
 colnames(df_sample_normalized_T4) = c('sample','diphtong','speaker','T4_0%','T4_10%','T4_20%','T4_30%','T4_40%',
                                       'T4_50%','T4_60%','T4_70%','T4_80%','T4_90%', 'T4_100%')
+#setwd("C:/Users/Luca/Desktop/Applied-Statistics-2019-master/Applied-Statistics-2019-master/data")

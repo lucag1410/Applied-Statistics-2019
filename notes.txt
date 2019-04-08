@@ -18,7 +18,7 @@ Il problema è che sarebbe da fare per ogni formante -> grosse dimensioni
 ---COSE DA FARE
 
 - PCA
-possiamo farla su: df_complete_normalized, df_complete_noZeros(?)
-dovremmo farla per ogni dittongo(?), per ogni speaker, per ogni coppia
+possiamo farla su: df_complete_normalized, df_complete_noZeros(?), df_sample_normalized_Ti,...
+dovremmo farla per ogni dittongo(?), per ogni speaker, per ogni coppia,...
 ...
 
