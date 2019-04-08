@@ -1,0 +1,15 @@
+CORRELAZIONI TRA LE FORMANTI
+
+Sembra che per le femmine l'unica correlazione rilevante tra le formanti originali (cor > 0.5) sia presente solo per il dittongo OY, tra T3 e T4.
+# per verificare: cor(df_OY_female_noZeros[,6:11]) > 0.5
+
+Sembra che per i maschi l'unica correlazione rilevante tra le formanti originali (cor > 0.5) sia presente solo per il dittongo aU, tra T2 e T4.
+# per verificare: cor(df_aU_male_noZeros[,6:11]) > 0.5
+
+Da notare che queste correlazioni non sono presenti per lo speaker dell'altro sesso.
+
+
+DATASET PER I SAMPLE
+
+Sarebbe interessante creare un dataframe anche per raccogliere le informazioni principali dei sample (punti massimi e minimi, inizio e fine, ...)
+Il problema è che sarebbe da fare per ogni formante -> grosse dimensioni

@@ -84,33 +84,6 @@ plot(data.aU_female$data, xlim = c(100, 900),ylim = c(550,2800), main='aU_female
 plot(data.aU_male$data, xlim = c(100, 900),ylim = c(550,2800), main='aU_male')
 plot(data.aI_female$data, xlim = c(100, 1000),ylim = c(550,2800), main='aI_female')
 plot(data.aI_male$data, xlim = c(100, 1000),ylim = c(550,2800), main='aI_male')
-graphics.off()
-
-
-formante = 4
-min_f = min(data.OY_female$data[,formante])
-max_f = max(data.OY_female$data[,formante])
-min_m = min(data.OY_male$data[,formante])
-max_m = max(data.OY_male$data[,formante])
-
-min_ov = min(min_f,min_m)
-max_ov = max(max_f, max_m)
-
-x11()
-boxplot(data.OY_female$data[,formante], col = 'gold', ylim = c(min_ov,max_ov), main='OY_female')
-x11()
-boxplot(data.OY_male$data[,formante], col = 'gold', ylim = c(min_ov,max_ov), main='OY_male')
-
-
-x11()
-plot(T_AVG[indices_OY_male], T_AVG[indices_OY_female], xlab = 'OY_male', ylab = 'OY_female',
-        main = 'Comparison of T_AVG between OY_female and OY_male', pch=19)
-x11()
-plot(T_AVG[indices_aU_male], T_AVG[indices_aU_female], xlab = 'aU_male', ylab = 'aU_female',
-     main = 'Comparison of T_AVG between aU_female and aU_male', pch=19)
-x11()
-plot(T_AVG[indices_aI_male], T_AVG[indices_aI_female], xlab = 'aI_male', ylab = 'aI_female',
-     main = 'Comparison of T_AVG between aI_female and aI_male', pch=19)
 
 
 ### plot of formants in the same range of values
@@ -172,8 +145,8 @@ data.OY = speech_data[indices_OY]
 indices_female = c()
 indices_male = c()
 for (i in 1:num_of_samples){
-  if (dip.spkr[i] == '67') indices_female = c(indices_female, i)
-  else if (dip.spkr[i] == '68') indices_male = c(indices_male, i)
+  if (dip.spkr[i] == '67') indices_male = c(indices_male, i)
+  else if (dip.spkr[i] == '68') indices_female = c(indices_female, i)
 }
 
 # CREATION OF ONE DATASET FOR EACH SPEAKER
@@ -411,17 +384,153 @@ rownames(df_complete_noZeros) = seq(1,num_observations)
 df_complete_noZeros['T2/T1'] = df_complete_noZeros$T2 / df_complete_noZeros$T1
 df_complete_noZeros['T_AVG'] = rowMeans(df_complete_noZeros %>% select(T1, T2, T3, T4))
 
+df_aI_female_noZeros = filter(df_complete_noZeros, diphtong == 'aI', speaker == 'F')
+df_aU_female_noZeros = filter(df_complete_noZeros, diphtong == 'aU', speaker == 'F')
+df_OY_female_noZeros = filter(df_complete_noZeros, diphtong == 'OY', speaker == 'F')
+df_aI_male_noZeros = filter(df_complete_noZeros, diphtong == 'aI', speaker == 'M')
+df_aU_male_noZeros = filter(df_complete_noZeros, diphtong == 'aU', speaker == 'M')
+df_OY_male_noZeros = filter(df_complete_noZeros, diphtong == 'OY', speaker == 'M')
 
-# plot 
+# plot formant values and means
 
 x11()
 plot(df_complete_noZeros$T1, xlab = 'Observation', ylab = 'Formant[Hz]', ylim =  c(0, max(df_complete[,6:9])), col = 'red')
 points(df_complete_noZeros$T2, col = 'blue')
 points(df_complete_noZeros$T3, col = 'green')
 points(df_complete_noZeros$T4, col = 'orange')
+points(df_complete_noZeros$T_AVG, col = 'gold')
 abline(h = c(mean(df_complete_noZeros$T1),mean(df_complete_noZeros$T2),mean(df_complete_noZeros$T3),mean(df_complete_noZeros$T4)), col = c('red','blue','green','orange'), lwd = 2)
 abline(v = which.max(df_complete_noZeros[,'speaker'] == 'F'))
 legend(x = 0, y = 5300, legend = c("T1","T2","T3","T4"), col = c('red','blue','green','orange'), lty = 1)
 text(1500,5300, 'Males')
 text(3500,5300, 'Females')
+
+
+### CREATION OF THE SAMPLES SUMMARY DATASET
+
+df_sample = data.frame(
+  row.names = c(1:num_of_samples),
+  'sample' = c(1:num_of_samples),
+  'diphtong' = dip.l,
+  'speaker' = ifelse(dip.spkr == '67', 'M', 'F')
+)
+
+# functions for retrieving the first and the last observations given a sample
+get_first_observation <- function(dataset, smpl){
+  result = dataset %>% filter(sample == smpl)
+  result = result[1,]
+  return(result)
+}
+
+get_last_observation <- function(dataset, smpl){
+  result = dataset %>% filter(sample == smpl)
+  result = tail(result, n=1)
+  return(result)
+}
+
+sample_duration = c()
+for (i in 1:num_of_samples){
+  sample_duration = c(sample_duration, 
+                      get_last_observation(df_complete_noZeros, i)$time -
+                        get_first_observation(df_complete_noZeros, i)$time)
+}
+df_sample['duration'] = sample_duration
+
+T1_min_per_sample = c()
+T2_min_per_sample = c()
+T1_max_per_sample = c()
+T2_max_per_sample = c()
+T1_first_per_sample = c()
+T2_first_per_sample = c()
+T1_last_per_sample = c()
+T2_last_per_sample = c()
+for (i in 1:num_of_samples){
+  T1_min_per_sample = c(T1_min_per_sample, 
+                      min(df_complete_noZeros[df_complete_noZeros$sample == i,]$T1))
+  T2_min_per_sample = c(T2_min_per_sample, 
+                        min(df_complete_noZeros[df_complete_noZeros$sample == i,]$T2))
+  T1_max_per_sample = c(T1_max_per_sample, 
+                        max(df_complete_noZeros[df_complete_noZeros$sample == i,]$T1))
+  T2_max_per_sample = c(T2_max_per_sample, 
+                        max(df_complete_noZeros[df_complete_noZeros$sample == i,]$T2))
+  T1_first_per_sample = c(T1_first_per_sample,
+                          get_first_observation(df_complete_noZeros, i)$T1)
+  T2_first_per_sample = c(T2_first_per_sample,
+                          get_first_observation(df_complete_noZeros, i)$T2)
+  T1_last_per_sample = c(T1_last_per_sample,
+                          get_first_observation(df_complete_noZeros, i)$T1)
+  T2_last_per_sample = c(T2_last_per_sample,
+                          get_first_observation(df_complete_noZeros, i)$T2)
+}
+df_sample['T1_min'] = T1_min_per_sample
+df_sample['T2_min'] = T2_min_per_sample
+df_sample['T1_max'] = T1_max_per_sample
+df_sample['T2_max'] = T2_max_per_sample
+df_sample['T1_first'] = T1_first_per_sample
+df_sample['T2_first'] = T2_first_per_sample
+df_sample['T1_last'] = T1_last_per_sample
+df_sample['T2_last'] = T2_last_per_sample
+
+
+### PCA
+samples.sd <- scale(df_complete_noZeros[,-(1:5)])
+samples.sd <- data.frame(samples.sd)
+samples.label = df_complete_noZeros[,(1:5)]
+
+head(samples.sd)
+
+pc.samples.sd <- princomp(samples.sd, scores=T)
+pc.samples.sd
+summary(pc.samples.sd)
+
+# Explained variance
+x11()
+layout(matrix(c(2,3,1,3),2,byrow=T))
+plot(pc.samples.sd, las=2, main='Principal Components', ylim=c(0,7))
+abline(h=1, col='blue')
+barplot(sapply(samples.sd,sd)^2, las=2, main='Original Variables', ylim=c(0,7), ylab='Variances')
+plot(cumsum(pc.samples.sd$sde^2)/sum(pc.samples.sd$sde^2), type='b', axes=F, xlab='Number of components', ylab='Contribution to the total variance', ylim=c(0,1))
+box()
+axis(2,at=0:10/10,labels=0:10/10)
+axis(1,at=1:ncol(samples.sd),labels=1:ncol(samples.sd),las=2)
+
+
+load.samples.sd <- pc.samples.sd$loadings
+load.samples.sd
+
+x11()
+par(mar = c(2,2,2,1), mfrow=c(3,1))
+for(i in 1:3)barplot(load.samples.sd[,i], ylim = c(-1, 1), main=paste('Loadings PC ',i,sep=''))
+
+
+scores.samples.sd <- pc.samples.sd$scores
+scores.samples.sd
+
+x11()
+plot(scores.samples.sd[,1:2], main = 'scores 1:2')
+abline(h=0, v=0, lty=2, col='grey')
+
+x11()
+biplot(pc.samples.sd)
+
+# We order the labels according to time order
+samples.label[,4] <- factor(samples.label[,4], levels=c('aI', 'aU', 'OY'))
+col.ramp <- rainbow(3)
+col.lab1 <- rep(NA, length(df_complete_noZeros[,1]))
+for(i in 1:length(df_complete_noZeros[,1]))
+  col.lab1[i] = col.ramp[which(samples.label[i,4] == levels(samples.label[,4]))]
+
+x11(width = 14)
+par(mfrow=c(1,2),mar=rep(8,4))
+plot(scores.samples.sd[,1:2], col=col.lab1, pch=19, xlim=c(-16,3), ylim=c(-3,3.2))
+abline(h=-3, v=-16, col=1)
+points(scores.samples.sd[,1], rep(-3, length(df_complete_noZeros[,1])), col=col.lab1, pch=19)
+points(rep(-16, length(df_complete_noZeros[,1])),scores.samples.sd[,2], col=col.lab1, pch=19)
+abline(h=0, v=0, lty=2, col='grey')
+plot(1:3, rep(0, 3), pch=15, col=rainbow(3), axes=F, xlab='',ylab='')
+axis(1, 1:3, levels(samples.label[,2]), las=2)
+abline(v=1:3, col='grey', lty=2)
+box()
+
+
 
