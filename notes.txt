@@ -18,7 +18,12 @@ Il problema è che sarebbe da fare per ogni formante -> grosse dimensioni
 ---COSE DA FARE
 
 - PCA
-possiamo farla su: df_complete_normalized, df_complete_noZeros(?), df_sample_normalized_Ti,...
+possiamo farla su: df_complete_normalized, df_complete_noZeros(?), df_sample_normalized_Tx,...
 dovremmo farla per ogni dittongo(?), per ogni speaker, per ogni coppia,...
 ...
+
+-----------
+LUCA: ho fatto PCA su male speaker per ciascuna formante (coi dataframe normalizzati), c'è un risultato interessante per T2
+La prossima cosa che faccio sarà confrontare i risultati con la PCA sui dataframe non normalizzati
+-----------
 

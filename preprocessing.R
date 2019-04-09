@@ -1,3 +1,5 @@
+#setwd("C:/Users/Luca/Desktop/Applied-Statistics-2019-master/Applied-Statistics-2019-master/data")
+
 library(emuR)
 
 # -----------------------------------------------------------------
@@ -580,4 +582,3 @@ colnames(df_sample_normalized_T3) = c('sample','diphtong','speaker','T3_0%','T3_
                                       'T3_50%','T3_60%','T3_70%','T3_80%','T3_90%', 'T3_100%')
 colnames(df_sample_normalized_T4) = c('sample','diphtong','speaker','T4_0%','T4_10%','T4_20%','T4_30%','T4_40%',
                                       'T4_50%','T4_60%','T4_70%','T4_80%','T4_90%', 'T4_100%')
-#setwd("C:/Users/Luca/Desktop/Applied-Statistics-2019-master/Applied-Statistics-2019-master/data")
