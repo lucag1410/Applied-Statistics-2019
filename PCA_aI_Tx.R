@@ -18,7 +18,7 @@ df_Tx <- switch (formante,
                 df_sample_normalized_T3,
                 df_sample_normalized_T4
 )
-df_aI_Tx <- df_Tx %>% filter(diphtong == 'aI')
+df_aI_Tx <- df_Tx %>% filter(diphtong == 'OY')
 label_df_Tx <- df_Tx[,1:3]
 data_aI_Tx <- df_aI_Tx[,-(1:3)]
 #data.norm_aI_Tx <- scale(data.norm_aI_Tx)
@@ -27,10 +27,10 @@ data_aI_Tx <- df_aI_Tx[,-(1:3)]
 x11()
 boxplot(data_aI_Tx, col = 'gold')
 
-dev.off()
+#dev.off()
 
 # --- PCA ---
-pc.data_aI_Tx <- princomp(data_aI_Tx, scores = T)
+pc.data_aI_Tx <- princomp(scale(data_aI_Tx), center = T, scores = T)
 pc.data_aI_Tx
 summary(pc.data_aI_Tx)
 
@@ -54,21 +54,21 @@ box()
 axis(2,at=0:10/10,labels=0:10/10)
 axis(1,at=1:ncol(data_aI_Tx),labels=1:ncol(data_aI_Tx),las=2)
 
-dev.off()
+#dev.off()
 
 # barplot of the loadings
 x11()
 par(mar = c(2,2,2,1), mfrow=c(3,1))
 for(i in 1:3)barplot(load.data_aI_Tx[,i], ylim = c(-1, 1), main=paste('Loadings PC ',i,sep=''))
 
-dev.off()
+#dev.off()
 
 # biplot
 x11()
 biplot(pc.data_aI_Tx)
 abline(h=0,v=0, col = 'grey', lty = 2)
 
-dev.off()
+#dev.off()
 
 ### creo la paletta di colore in modo molto brutale
 pal <- NULL
@@ -85,4 +85,4 @@ plot(scores.data_aI_Tx[,1:2], col = pal, pch = 19,
 abline(h = 0, v = 0, lty = 2, col = 'grey')
 legend(x = 'topleft', legend = c('M', 'F'), col = c('deepskyblue', 'deeppink'), lty = 1)
 
-dev.off()
+#dev.off()

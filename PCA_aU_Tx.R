@@ -27,7 +27,7 @@ data_aU_Tx <- df_aU_Tx[,-(1:3)]
 x11()
 boxplot(data_aU_Tx, col = 'gold')
 
-dev.off()
+#dev.off()
 
 # --- PCA ---
 pc.data_aU_Tx <- princomp(data_aU_Tx, scores = T)
@@ -54,21 +54,21 @@ box()
 axis(2,at=0:10/10,labels=0:10/10)
 axis(1,at=1:ncol(data_aU_Tx),labels=1:ncol(data_aU_Tx),las=2)
 
-dev.off()
+#dev.off()
 
 # barplot of the loadings
 x11()
 par(mar = c(2,2,2,1), mfrow=c(3,1))
 for(i in 1:3)barplot(load.data_aU_Tx[,i], ylim = c(-1, 1), main=paste('Loadings PC ',i,sep=''))
 
-dev.off()
+#dev.off()
 
 # biplot
 x11()
 biplot(pc.data_aU_Tx)
 abline(h=0,v=0, col = 'grey', lty = 2)
 
-dev.off()
+#dev.off()
 
 ### creo la paletta di colore in modo molto brutale
 pal <- NULL
@@ -84,4 +84,4 @@ plot(scores.data_aU_Tx[,1:2], col = pal, pch = 19,
 abline(h = 0, v = 0, lty = 2, col = 'grey')
 legend(x = 'topleft', legend = c('M', 'F'), col = c('deepskyblue', 'deeppink'), lty = 1)
 
-dev.off()
+#dev.off()

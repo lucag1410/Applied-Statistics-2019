@@ -1,7 +1,11 @@
 #setwd("C:/Users/Luca/Desktop/Applied-Statistics-2019-master/Applied-Statistics-2019-master/data")
 
+#load("C:/Users/Luca/Documents/Università/5° anno, 2° semestre/Applied Statistics/R files/Laboratorio/Mcshapiro/mcshapiro.test.RData")
+
+
 library(emuR)
 
+graphics.off()
 # -----------------------------------------------------------------
 # variables definition
 num_of_formants = 4
@@ -28,7 +32,7 @@ df_sample_normalized_T2 = read.table('../data/df_sample_normalized_T2.txt')
 df_sample_normalized_T3 = read.table('../data/df_sample_normalized_T3.txt')
 df_sample_normalized_T4 = read.table('../data/df_sample_normalized_T4.txt')
 df_sample = read.table('../data/df_sample.txt')
-
+df_complete_normalized = read.table('../data/df_complete_normalized.txt')
 
 
 #-------------------------------------------------------------------------------------------------------------
@@ -190,13 +194,12 @@ rm(temp) # remove temp since we don't need it anymore
 
 
 ### plot ratio F2/F1 for a given case (set "chosen_index" to the indices that you want)
-###DA FINIRE: C'é QUALCOSA CHE NON VA CON I VALORI MASSIMALI DELLE CURVE (E.G. MAX IN 12 AND NOT IN 4.7)
 chosen_indices = indices_OY
 x11()
 plot(x = c(0, max(ratio_F2_F1_data$index[,2] - ratio_F2_F1_data$index[,1])),
      y = c(0, max(ratio_F2_F1_data$data)), type='n',
      xlab = 'time', ylab = 'Ratio F2/F1', 
-     main = c('Ratio F2/F1 for diph. ', unique(dip.l[chosen_indices]), 'both spkrs'))
+     main = paste('Ratio F2/F1 for diph. ', unique(dip.l[chosen_indices]), 'both spkrs'))
 for (i in chosen_indices){
   rand_color = sample(1:length(color), 1)
   points(ratio_F2_F1_data[i,]$data, col = rand_color, pch = 19)
@@ -464,66 +467,6 @@ df_sample['T1_last'] = T1_last_per_sample
 df_sample['T2_last'] = T2_last_per_sample
 
 
-### PCA
-samples.sd <- scale(df_complete_noZeros[,-(1:5)])
-samples.sd <- data.frame(samples.sd)
-samples.label = df_complete_noZeros[,(1:5)]
-
-head(samples.sd)
-
-pc.samples.sd <- princomp(samples.sd, scores=T)
-pc.samples.sd
-summary(pc.samples.sd)
-
-# Explained variance
-x11()
-layout(matrix(c(2,3,1,3),2,byrow=T))
-plot(pc.samples.sd, las=2, main='Principal Components', ylim=c(0,7))
-abline(h=1, col='blue')
-barplot(sapply(samples.sd,sd)^2, las=2, main='Original Variables', ylim=c(0,7), ylab='Variances')
-plot(cumsum(pc.samples.sd$sde^2)/sum(pc.samples.sd$sde^2), type='b', axes=F, xlab='Number of components', ylab='Contribution to the total variance', ylim=c(0,1))
-box()
-axis(2,at=0:10/10,labels=0:10/10)
-axis(1,at=1:ncol(samples.sd),labels=1:ncol(samples.sd),las=2)
-
-
-load.samples.sd <- pc.samples.sd$loadings
-load.samples.sd
-
-x11()
-par(mar = c(2,2,2,1), mfrow=c(3,1))
-for(i in 1:3)barplot(load.samples.sd[,i], ylim = c(-1, 1), main=paste('Loadings PC ',i,sep=''))
-
-
-scores.samples.sd <- pc.samples.sd$scores
-scores.samples.sd
-
-x11()
-plot(scores.samples.sd[,1:2], main = 'scores 1:2')
-abline(h=0, v=0, lty=2, col='grey')
-
-x11()
-biplot(pc.samples.sd)
-
-# We order the labels according to time order
-samples.label[,4] <- factor(samples.label[,4], levels=c('aI', 'aU', 'OY'))
-col.ramp <- rainbow(3)
-col.lab1 <- rep(NA, length(df_complete_noZeros[,1]))
-for(i in 1:length(df_complete_noZeros[,1]))
-  col.lab1[i] = col.ramp[which(samples.label[i,4] == levels(samples.label[,4]))]
-
-x11(width = 14)
-par(mfrow=c(1,2),mar=rep(8,4))
-plot(scores.samples.sd[,1:2], col=col.lab1, pch=19, xlim=c(-16,3), ylim=c(-3,3.2))
-abline(h=-3, v=-16, col=1)
-points(scores.samples.sd[,1], rep(-3, length(df_complete_noZeros[,1])), col=col.lab1, pch=19)
-points(rep(-16, length(df_complete_noZeros[,1])),scores.samples.sd[,2], col=col.lab1, pch=19)
-abline(h=0, v=0, lty=2, col='grey')
-plot(1:3, rep(0, 3), pch=15, col=rainbow(3), axes=F, xlab='',ylab='')
-axis(1, 1:3, levels(samples.label[,2]), las=2)
-abline(v=1:3, col='grey', lty=2)
-box()
-
 ###  CREATION OF NORMALIZED DATASET FOR EACH FORMANT
 num_of_interpolations = 60
 
@@ -582,3 +525,52 @@ colnames(df_sample_normalized_T3) = c('sample','diphtong','speaker','T3_0%','T3_
                                       'T3_50%','T3_60%','T3_70%','T3_80%','T3_90%', 'T3_100%')
 colnames(df_sample_normalized_T4) = c('sample','diphtong','speaker','T4_0%','T4_10%','T4_20%','T4_30%','T4_40%',
                                       'T4_50%','T4_60%','T4_70%','T4_80%','T4_90%', 'T4_100%')
+
+### ratio for the whole dataset
+x11(width = 10)
+par(mar = c(4.1, 4.1, 4.1, 2.1), mfrow = c(3,4))
+for (perc in c(1:11)){
+  plot(df_sample_normalized_T2[,-(1:3)][,perc] / df_sample_normalized_T1[,-(1:3)][,perc], col = col.diphtongs,
+       pch = 19, ylim = c(0,12),
+       xlab = 'Index', ylab = 'Ratio T2/T1', 
+       main = paste('Ratio T2/T1 at ', (perc-1)*10, '%', sep=''))
+}
+
+### ratio for given speaker
+spkr = 'M'
+x11(width = 10)
+par(mar = c(4.1, 4.1, 4.1, 2.1), mfrow = c(3,4))
+for (perc in c(1:11)){
+  plot(filter(df_sample_normalized_T2, speaker == spkr)[,-(1:3)][,perc] / 
+         filter(df_sample_normalized_T1, speaker == spkr)[,-(1:3)][,perc], col = col.diphtongs,
+       pch = 19, ylim = c(0,12),
+       xlab = 'Index', ylab = 'Ratio T2/T1', 
+       main = paste(ifelse(spkr == 'F', 'Female','Male'),' Ratio T2/T1 at ', (perc-1)*10, '%', sep=''))
+}
+
+###SISTEMARE I COLORI!!!
+### ratio for given diphtong
+diph = 'aU'
+x11(width = 10)
+par(mar = c(4.1, 4.1, 4.1, 2.1), mfrow = c(3,4))
+for (perc in c(1:11)){
+  plot(filter(df_sample_normalized_T2, diphtong == diph)[,-(1:3)][,perc] / 
+         filter(df_sample_normalized_T1, diphtong == diph)[,-(1:3)][,perc], col = col.speakers,
+       pch = 19, ylim = c(0,12),
+       xlab = 'Index', ylab = 'Ratio T2/T1', 
+       main = paste('Ratio T2/T1 for ', diph ,' at ', (perc-1)*10, '%', sep=''))
+}
+
+### ratio given a speaker and a diphtong
+spkr = 'M'
+diph = 'OY'
+col_diph = mapvalues(diph, c('aI', 'aU', 'OY'), c('red','green','blue'))
+x11(width = 10)
+par(mar = c(4.1, 4.1, 4.1, 2.1), mfrow = c(3,4))
+for (perc in c(1:11)){
+  plot(filter(df_sample_normalized_T2, speaker==spkr, diphtong == diph)[,-(1:3)][,perc] / 
+         filter(df_sample_normalized_T1, speaker==spkr, diphtong == diph)[,-(1:3)][,perc], col = col_diph,
+       pch = 19, ylim = c(0,12),
+       xlab = 'Index', ylab = 'Ratio T2/T1', 
+       main = paste(ifelse(spkr == 'F', 'Female','Male'),' Ratio T2/T1 for ' , diph , ' at ', (perc-1)*10, '%', sep=''))
+}

@@ -23,7 +23,8 @@ dovremmo farla per ogni dittongo(?), per ogni speaker, per ogni coppia,...
 ...
 
 -----------
-LUCA: ho fatto PCA su male speaker per ciascuna formante (coi dataframe normalizzati), c'è un risultato interessante per T2
-La prossima cosa che faccio sarà confrontare i risultati con la PCA sui dataframe non normalizzati
+LUCA: ho fatto PCA su male e female speaker per ciascuna formante (coi dataframe normalizzati), c'è un risultato interessante per T2
+
 -----------
 
+###guardare qui https://www.phonetik.uni-muenchen.de/~jmh/research/pasc010808/old/ch6n.pdf
