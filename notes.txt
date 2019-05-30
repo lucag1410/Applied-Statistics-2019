@@ -1,3 +1,6 @@
+DIFFERENZA F2 - F1
+Questa misura potrebbe essere indicativa per riconoscere una vocale (vedi valori standard su internet)
+
 CORRELAZIONI TRA LE FORMANTI
 
 Sembra che per le femmine l'unica correlazione rilevante tra le formanti originali (cor > 0.5) sia presente solo per il dittongo OY, tra T3 e T4.
@@ -26,5 +29,6 @@ dovremmo farla per ogni dittongo(?), per ogni speaker, per ogni coppia,...
 LUCA: ho fatto PCA su male e female speaker per ciascuna formante (coi dataframe normalizzati), c'è un risultato interessante per T2
 
 -----------
+
 
 ###guardare qui https://www.phonetik.uni-muenchen.de/~jmh/research/pasc010808/old/ch6n.pdf

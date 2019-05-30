@@ -1,6 +1,6 @@
 library(emuR)
 
-graphics.off()
+#graphics.off()
 
 relevant_percentages = c(0.0, 0.25, 0.5, 0.75, 1.0)
 
@@ -84,5 +84,5 @@ for (perc in relevant_percentages){
 
 ### T1, T2 for males
 x11()
-dplot(m.fdat[,1:2], m.l, col = c('red','green','blue'), normalise = T,
+dplot(m.fdat[,2], m.l, col = c('red','green','blue'), normalise = T,
       main=paste('Overall diphtongs values for male'))
