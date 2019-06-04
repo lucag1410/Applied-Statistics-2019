@@ -4,7 +4,7 @@ library(emuR)
 library(dplyr)
 library(plyr)
 
-graphics.off()
+#graphics.off()
 
 # selection of the data
 formante = 2
@@ -40,15 +40,16 @@ load.norm_female_Tx = pc.norm_female_Tx$loadings
 load.norm_female_Tx
 
 # Explained variance (scree plot)
-# x11()
-# layout(matrix(c(2,3,1,3),2,byrow=T))
-# plot(pc.norm_male_Tx, las=2, main='Principal Components', ylim=c(0,max(cumsum(pc.norm_male_Tx$sde^2)/sum(pc.norm_male_Tx$sde^2))))
-# abline(h=1, col='blue')
-# barplot(sapply(data.norm_male_Tx,sd)^2, las=2, main='Original Variables', ylim=c(0,max(sapply(data.norm_male_Tx,sd)^2)), ylab='Variances')
-# plot(cumsum(pc.norm_male_Tx$sde^2)/sum(pc.norm_male_Tx$sde^2), type='b', axes=F, xlab='Number of components', ylab='Contribution to the total variance', ylim=c(0,1))
-# box()
-# axis(2,at=0:10/10,labels=0:10/10)
-# axis(1,at=1:ncol(data.norm_male_Tx),labels=1:ncol(data.norm_male_Tx),las=2)
+x11()
+layout(matrix(c(2,3,1,3),2,byrow=T))
+plot(pc.norm_male_Tx, las=2, main='Principal Components', ylim=c(0,6e5))
+barplot(sapply(data.norm_male_Tx,sd)^2, las=2, main='Original Variables', ylim=c(0,max(sapply(data.norm_male_Tx,sd)^2)), ylab='Variances')
+plot(cumsum(pc.norm_male_Tx$sde^2)/sum(pc.norm_male_Tx$sde^2), type='b', axes=F, xlab='Number of components', ylab='Contribution to the total variance', 
+     ylim=c(0,1))
+abline(h=0.9, col='blue')
+box()
+axis(2,at=0:10/10,labels=0:10/10)
+axis(1,at=1:ncol(data.norm_male_Tx),labels=1:ncol(data.norm_male_Tx),las=2)
 
 
 # plot the loadings
@@ -84,11 +85,11 @@ par(mar = c(2,2,2,2),mfcol=c(2,1))
 plot(scores.norm_male_Tx[,1:2], col=col.diphtongs, pch=19,
      main=paste('Scores per diphtong, with male speaker and formant T', formante))
 abline(h=0, v=0, lty=2, col='grey')
-legend(x = 'topleft', legend=c('aI','aU', 'OY'), col = col.palette_diphtong, lty = 1)
+legend(x = 'bottomleft', legend=c('aI','aU', 'OY'), col = col.palette_diphtong, lty = 1)
 plot(scores.norm_female_Tx[,1:2], col=col.diphtongs, pch=19,
      main=paste('Scores per diphtong, with female speaker and formant T', formante))
 abline(h=0, v=0, lty=2, col='grey')
-legend(x = 'topleft', legend=c('aI','aU', 'OY'), col = col.palette_diphtong, lty = 1)
+legend(x = 'bottomleft', legend=c('aI','aU', 'OY'), col = col.palette_diphtong, lty = 1)
 
 
 # ... and for speaker
