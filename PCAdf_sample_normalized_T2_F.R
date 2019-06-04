@@ -53,15 +53,15 @@ scores.df_sample_normalized_T2_F
 
 # generate palettes for diphtongs and speakers
 n = length(df_sample_normalized_T2_F[,1])
-label.df_sample_normalized_T2_F[,2] <- factor(label.df_sample_normalized_T2_F[,2], levels=c('aI', 'aU', 'OY'))
-label.df_sample_normalized_T2_F[,3] <- factor(label.df_sample_normalized_T2_F[,3], levels=c('M', 'F'))
+label.df_Tx[,2] <- factor(label.df_Tx[,2], levels=c('aI', 'aU', 'OY'))
+label.df_Tx[,3] <- factor(label.df_Tx[,3], levels=c('M', 'F'))
 col.palette_diphtong = c('red', 'green', 'blue')
 col.palette_speaker = c('deepskyblue', 'deeppink')
 col.diphtongs = rep(NA, n)
 col.speakers = rep(NA, n)
 for(i in 1:n){
-  col.diphtongs[i] = col.palette_diphtong[which(label.df_sample_normalized_T2_F[i,2] == levels(label.df_sample_normalized_T2_F[,2]))]
-  col.speakers[i] = col.palette_speaker[which(label.df_sample_normalized_T2_Fdf_Tx[i,3] == levels(label.df_sample_normalized_T2_F[,3]))]
+  col.diphtongs[i] = col.palette_diphtong[which(label.df_Tx[i,2] == levels(label.df_Tx[,2]))]
+  col.speakers[i] = col.palette_speaker[which(label.df_Tx[i,3] == levels(label.df_Tx[,3]))]
 }
 
 #plot of the scores
