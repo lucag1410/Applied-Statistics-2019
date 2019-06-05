@@ -526,6 +526,23 @@ colnames(df_sample_normalized_T3) = c('sample','diphtong','speaker','T3_0%','T3_
 colnames(df_sample_normalized_T4) = c('sample','diphtong','speaker','T4_0%','T4_10%','T4_20%','T4_30%','T4_40%',
                                       'T4_50%','T4_60%','T4_70%','T4_80%','T4_90%', 'T4_100%')
 
+##CREATION OF THE MATRIX WITH NORMALIZED DATA FOR ALL THE FORMANTS
+df_sample_normalized_T1T2T3T4 = df_sample[,1:3]
+
+for (i in c(1:186)){
+  df_sample_normalized_T1T2T3T4[i,4:14] = df_sample_normalized_T1[i,4:14]
+  df_sample_normalized_T1T2T3T4[i,15:25] = df_sample_normalized_T2[i,4:14]
+  df_sample_normalized_T1T2T3T4[i,26:36] = df_sample_normalized_T3[i,4:14]
+  df_sample_normalized_T1T2T3T4[i,37:47] = df_sample_normalized_T4[i,4:14]
+}
+
+colnames(df_sample_normalized_T1T2T3T4) = c('sample','diphtong','speaker','T1_0%','T1_10%','T1_20%','T1_30%','T1_40%',
+'T1_50%','T1_60%','T1_70%','T1_80%','T1_90%', 'T1_100%', 'T2_0%','T2_10%','T2_20%','T2_30%','T2_40%',
+'T2_50%','T2_60%','T2_70%','T2_80%','T2_90%', 'T2_100%', 'T3_0%','T3_10%','T3_20%','T3_30%','T3_40%',
+'T3_50%','T3_60%','T3_70%','T3_80%','T3_90%', 'T3_100%', 'T4_0%','T4_10%','T4_20%','T4_30%','T4_40%',
+'T4_50%','T4_60%','T4_70%','T4_80%','T4_90%', 'T4_100%')
+
+
 ### ratio for the whole dataset
 x11(width = 10)
 par(mar = c(4.1, 4.1, 4.1, 2.1), mfrow = c(3,4))
