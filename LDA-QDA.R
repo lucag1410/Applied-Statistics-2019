@@ -62,5 +62,29 @@ AERCV.lda
 
 #########
 #####PLOT PARTITION AND CONTOUR
-#####QDA
 ####PRIOR AND POSTERIOR?
+
+#QDA
+T1T2T3T4.qda <- qda(df_sample_normalized_T1T2T3T4_2, diphtongs_names)
+T1T2T3T4.qda
+
+T1T2T3T4.Qda <- predict(T1T2T3T4.qda, df_sample_normalized_T1T2T3T4_2)
+T1T2T3T4.Qda
+
+#compute the APER
+T1T2T3T4.Qda$class
+table(class.true = diphtongs_names, class.assigned = T1T2T3T4.Qda$class)
+
+errors.qda <- (diphtongs_names != T1T2T3T4.Qda$class)
+APER.qda <- sum(errors.qda)/length(diphtongs_names)
+APER.qda
+
+#compute the AER
+T1T2T3T4_CV.qda <- qda(df_sample_normalized_T1T2T3T4_2, diphtongs_names = T)
+T1T2T3T4_CV.qda
+
+table(class.true = diphtongs_names, class.assigned = T1T2T3T4_CV.qda$class)
+errorsCV.qda <- (diphtongs_names != T1T2T3T4_CV.qda$class)
+
+AER.qda <- sum(errorsCV.qda)/length(diphtongs_names)
+AER.qda
