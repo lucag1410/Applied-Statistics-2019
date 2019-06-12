@@ -1,9 +1,11 @@
 #setwd("C:/Users/Luca/Desktop/Applied-Statistics-2019-master/Applied-Statistics-2019-master/data")
 library(plyr)
+library(dplyr)
 library(mvtnorm)
 library(rgl)
 library(car)
 library(MASS)
+library(useful)
 
 ### LOAD DATASETS
 df_norm = read.table('../data/df_norm.txt')
@@ -13,9 +15,8 @@ df_sample_normalized_T2 = read.table('../data/df_sample_normalized_T2.txt')
 df_sample_normalized_T3 = read.table('../data/df_sample_normalized_T3.txt')
 df_sample_normalized_T4 = read.table('../data/df_sample_normalized_T4.txt')
 df_sample = read.table('../data/df_sample.txt')
-df_complete_normalized = read.table('../data/df_complete_normalized.txt')
-df_sample_normalized_total = read.table('../data/df_sample_normalized_total.txt')
-
+df_sample_normalized_percentages_as_rows = read.table('../data/df_sample_normalized_percentages_as_rows.txt')
+df_sample_normalized_T1T2T3T4 = read.table('../data/df_sample_normalized_percentages_as_features.txt')
 
 #write.table(df_sample_normalized_total_female, "df_sample_normalized_total_female.txt")
 
@@ -26,8 +27,6 @@ df_sample_normalized_total = read.table('../data/df_sample_normalized_total.txt'
 # data_T2.eucl_single = hclust(data_T2.eucl, method = 'single')
 # data_T2.eucl_average = hclust(data_T2.eucl, method = 'average')
 # data_T2.eucl_complete = hclust(data_T2.eucl, method = 'complete')
-
-diphtong_labels = df_sample_normalized_total_male[,2]
 
 data_T2 = df_sample_normalized_total_male[,5:8]
 data_T2.eucl = dist(data_T2, method = 'euclidean')
@@ -77,5 +76,99 @@ table(etichetta.vera = diphtong_labels, etichetta.cluster = cluster.single_T2)
 table(etichetta.vera = diphtong_labels, etichetta.cluster = cluster.complete_T2)
 table(etichetta.vera = diphtong_labels, etichetta.cluster = cluster.average_T2)
 # questi risultati non vanno bene
+
+#######################################################################
+
+data_label = df_sample_normalized_T1T2T3T4[,1:3]
+data_scaled = cbind(data_label, scale(df_sample_normalized_T1T2T3T4[,4:47]))
+data_not_scaled = cbind(data_label, df_sample_normalized_T1T2T3T4[,4:47])
+
+diph = 'aI'
+
+# FEMALE #
+
+spkr = 'F'
+
+data_scaled_F = data_scaled %>% filter(speaker==spkr)
+data_not_scaled_F = data_not_scaled %>% filter(speaker==spkr)
+diphtong_labels_F = data_scaled_F[,2]
+
+
+k_means = kmeans(data_not_scaled_F[,4:47], centers = 3)
+# table(k_means$cluster)
+# k_means$centers
+x11()
+plot.kmeans(x=k_means, data = data_not_scaled_F[,4:47],
+            title='KMeans clustering of Female Data')
+
+k_means_scaled = kmeans(data_scaled_F[,4:47], centers = 3)
+# table(k_means_scaled$cluster)
+# k_means_scaled$centers
+
+#table(etichetta.vera_F = diphtong_labels_F, etichetta.cluster = k_means_scaled$cluster)
+table(etichetta.vera_F = diphtong_labels_F, etichetta.cluster = k_means$cluster)
+
+# MALE #
+
+spkr = 'M'
+
+data_scaled_M = data_scaled %>% filter(speaker==spkr)
+data_not_scaled_M = data_not_scaled %>% filter(speaker==spkr)
+diphtong_labels_M = data_scaled_M[,2]
+
+k_means = kmeans(data_not_scaled_M[,4:47], centers = 3)
+# table(k_means$cluster)
+# k_means$centers
+x11()
+plot.kmeans(x=k_means, data = data_not_scaled_M[,4:47],
+            title ='KMeans clustering of Male Data')
+
+k_means_scaled = kmeans(data_scaled_M[,4:47], centers = 3)
+# table(k_means_scaled$cluster)
+# k_means_scaled$centers
+
+#table(etichetta.vera_M = diphtong_labels_M, etichetta.cluster = k_means_scaled$cluster)
+table(etichetta.vera_M = diphtong_labels_M, etichetta.cluster = k_means$cluster)
+
+# AI #
+
+
+diph = 'aI'
+
+data_scaled_aI = data_scaled %>% filter(diphthong==diph)
+data_not_scaled_aI = data_not_scaled %>% filter(diphthong==diph)
+diphtong_labels_aI = data_scaled_aI[,3]
+
+k_means = kmeans(data_not_scaled_aI[,4:47], centers = 2)
+# table(k_means$cluster)
+# k_means$centers
+x11()
+plot.kmeans(x=k_means, data = data_not_scaled_aI[,4:47],
+            title ='KMeans clustering of aI Data')
+
+# OVERALL #
+
+diph_labels = data_scaled[,2]
+spkr_labels = data_scaled[,3]
+
+k_means = kmeans(data_not_scaled[,4:47], centers = 2)
+# table(k_means$cluster)
+# k_means$centers
+x11()
+plot.kmeans(x=k_means, data = data_not_scaled[,4:47],
+            title ='KMeans clustering of the whole dataset')
+table(etichetta.vera = diph_labels, etichetta.cluster = k_means$cluster)
+
+###########################################################################
+
+# subset_per_diph = which(df_sample_normalized_T1T2T3T4$diphthong=='aI')
+# x = seq(0,11,1)
+# x11()
+# plot(x, df_sample_normalized_T1T2T3T4[subset_per_diph,][,4:14], col='red')
+# lines(df_sample_normalized_T1T2T3T4[subset_per_diph,][,15:25], col='green')
+# lines(df_sample_normalized_T1T2T3T4[subset_per_diph,][,26:36], col='blue')
+# lines(df_sample_normalized_T1T2T3T4[subset_per_diph,][,37:47], col='yellow')
+
+###########################################################################
 
 

@@ -1,3 +1,10 @@
+- Questione dell'usare gruppi di dati per fare classificazione:
+forse possiamo fare 4 classificazioni (una per formante)
+In pratica, abbiamo un nuovo dato (i.e. 11 percentuali per formante), facciamo 
+4 classificazioni (una per T1, una per T2, ...)
+
+
+###################################################################################
 DIFFERENZA F2 - F1
 Questa misura potrebbe essere indicativa per riconoscere una vocale (vedi valori standard su internet)
 
