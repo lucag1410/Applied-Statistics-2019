@@ -55,8 +55,8 @@ scores.df_sample_normalized_T2_F
 
 # generate palettes for diphtongs and speakers
 n = length(df_sample_normalized_T2_F[,1])
-label.df_sample_normalized_T2_F[,2] <- factor(label.df_sample_normalized_T2_F[,2], levels=c('aI', 'aU', 'OY'))
-label.df_sample_normalized_T2_F[,3] <- factor(label.df_sample_normalized_T2_F[,3], levels=c('M', 'F'))
+label.df_Tx[,2] <- factor(label.df_Tx[,2], levels=c('aI', 'aU', 'OY'))
+label.df_Tx[,3] <- factor(label.df_Tx[,3], levels=c('M', 'F'))
 col.palette_diphtong = c('red', 'green', 'blue')
 col.palette_speaker = c('deepskyblue', 'deeppink')
 col.diphtongs = rep(NA, n)
