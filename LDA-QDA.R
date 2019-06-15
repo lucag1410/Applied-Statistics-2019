@@ -21,7 +21,18 @@ n3 <- length(i3)
 n <- n1 + n2 + n3
 
 df_sample_normalized_T1T2T3T4_2 <- df_sample_normalized_T1T2T3T4[,4:47]
+mcshapiro.test(df_sample_normalized_T1T2T3T4_2)
+#principal component analysis to plot the data 
+pc.df_sample_normalized_T1T2T3T4 <- princomp(df_sample_normalized_T1T2T3T4_2)
+pc.df_sample_normalized_T1T2T3T4
 
+#plot of the loadings
+load.df_sample_normalized_T1T2T3T4 <- pc.df_sample_normalized_T1T2T3T4$loadings
+load.df_sample_normalized_T1T2T3T4
+
+x11()
+par(mar = c(1,4,0,2), mfrow = c(3,1))
+for (i in 1:3) barplot(load.df_sample_normalized_T1T2T3T4[,i], ylim = c(-1,1), main = paste('loadings PC', i, sep = ''))
 ###########FARE
 #plot the data
 #prima fare pca per vedere cosa bisogna plottare
@@ -42,6 +53,8 @@ T1T2T3T4.Lda <- predict(T1T2T3T4.lda, df_sample_normalized_T1T2T3T4_2)
 
 #compute the APER
 T1T2T3T4.Lda$class
+
+#creation of the confusion matrix 
 table(class.true = diphtongs_names, class.assigned = T1T2T3T4.Lda$class)
 
 errors.lda <- (T1T2T3T4.Lda$class != diphtongs_names)
@@ -54,6 +67,7 @@ APER.lda
 T1T2T3T4_CV.lda <- lda(df_sample_normalized_T1T2T3T4_2, diphtongs_names, CV = T)
 T1T2T3T4_CV.lda$class
 
+#creation of the confusion matrix
 table(class.true =diphtongs_names, class.assigned = T1T2T3T4_CV.lda$class)
 errorsCV.lda <- (diphtongs_names != T1T2T3T4_CV.lda$class)
 
@@ -65,6 +79,8 @@ AERCV.lda
 ####PRIOR AND POSTERIOR?
 
 #QDA
+#we scale the values of the groups, otherwise the values are too low to perform QDA
+#diphtongs_names<-scale(diphtongs_names)
 T1T2T3T4.qda <- qda(df_sample_normalized_T1T2T3T4_2, diphtongs_names)
 T1T2T3T4.qda
 
@@ -73,6 +89,8 @@ T1T2T3T4.Qda
 
 #compute the APER
 T1T2T3T4.Qda$class
+
+#creation of the confusion matrix
 table(class.true = diphtongs_names, class.assigned = T1T2T3T4.Qda$class)
 
 errors.qda <- (diphtongs_names != T1T2T3T4.Qda$class)
@@ -83,8 +101,10 @@ APER.qda
 T1T2T3T4_CV.qda <- qda(df_sample_normalized_T1T2T3T4_2, diphtongs_names = T)
 T1T2T3T4_CV.qda
 
+#creation of the confusion matrix
 table(class.true = diphtongs_names, class.assigned = T1T2T3T4_CV.qda$class)
 errorsCV.qda <- (diphtongs_names != T1T2T3T4_CV.qda$class)
 
 AER.qda <- sum(errorsCV.qda)/length(diphtongs_names)
 AER.qda
+
