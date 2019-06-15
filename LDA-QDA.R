@@ -108,3 +108,8 @@ errorsCV.qda <- (diphtongs_names != T1T2T3T4_CV.qda$class)
 AER.qda <- sum(errorsCV.qda)/length(diphtongs_names)
 AER.qda
 
+#knn
+library(class)
+k <- 7
+T1T2T3T4.knn <- knn(train = df_sample_normalized_T1T2T3T4_2, test = df_sample_normalized_T1T2T3T4_2, cl = df_sample_normalized_T1T2T3T4$diphtong, k = k)
+T1T2T3T4.knn
