@@ -7,9 +7,9 @@ dat_f <- all_dat[(94:186),]
 
 # GENERATE THE TEST SET
 
-aI_m <- all_dat %>% filter(diphtong == "aI" & speaker == "M")
-aU_m <- all_dat %>% filter(diphtong == "aU" & speaker == "M")
-OY_m <- all_dat %>% filter(diphtong == "OY" & speaker == "M")
+aI_m <- all_dat %>% filter(diphthong == "aI" & speaker == "M")
+aU_m <- all_dat %>% filter(diphthong == "aU" & speaker == "M")
+OY_m <- all_dat %>% filter(diphthong == "OY" & speaker == "M")
 
 test_aI <- sample_n(aI_m, 10)
 test_aU <- sample_n(aU_m, 4)
@@ -42,7 +42,7 @@ aI_vs_aU_m <- aI_vs_aU_m[,-1]
 #aI_vs_aU_m <- data.frame(lbl1, aI_vs_aU_m)
 
 attach(aI_vs_aU_m)
-tune1 <- tune(svm, diphtong~., data = aI_vs_aU_m, kernel = "linear",
+tune1 <- tune(svm, diphthong~., data = aI_vs_aU_m, kernel = "linear",
               ranges = list(cost = c(0.001, 0.01, 0.1, 1, 10, 100)))
 summary(tune1)
 best1 <- tune1$best.model
@@ -65,7 +65,7 @@ aI_vs_OY_m <- aI_vs_OY_m[,-1]
 #aI_vs_OY_m <- data.frame(lbl2, aI_vs_OY_m)
 
 attach(aI_vs_OY_m)
-tune2 <- tune(svm, diphtong~., data = aI_vs_OY_m, kernel = "linear",
+tune2 <- tune(svm, diphthong~., data = aI_vs_OY_m, kernel = "linear",
               ranges = list(cost = c(0.001, 0.01, 0.1, 1, 10, 100)))
 summary(tune2)
 best2 <- tune2$best.model
@@ -88,7 +88,7 @@ aU_vs_OY_m <- aU_vs_OY_m[,-1]
 #aU_vs_OY_m <- data.frame(lbl3, aU_vs_OY_m)
 
 attach(aU_vs_OY_m)
-tune3 <- tune(svm, diphtong~., data = aU_vs_OY_m, kernel = "linear",
+tune3 <- tune(svm, diphthong~., data = aU_vs_OY_m, kernel = "linear",
               ranges = list(cost = c(0.001, 0.01, 0.1, 1, 10, 100)))
 summary(tune3)
 best3 <- tune3$best.model
