@@ -1,5 +1,5 @@
-setwd("C:/Users/Cecilia Frapiccini/Desktop/POLIMI/5 anno/APPLIED STATISTICS/PROJECT")
-load("C:/Users/Cecilia Frapiccini/Desktop/POLIMI/5 anno/APPLIED STATISTICS/PROJECT/mcshapiro.test.RData")
+setwd("C:/Users/Cecilia Frapiccini/Desktop/APPLIED STATISTICS/PROJECT")
+load("C:/Users/Cecilia Frapiccini/Desktop/APPLIED STATISTICS/PROJECT/mcshapiro.test.RData")
 
 library(MASS)
 
@@ -14,28 +14,12 @@ i3 <- which(diphtongs_names=='OY')
 
 n1 <- length(i1)
 n2 <- length(i2)
-
-
 n3 <- length(i3)
 
 n <- n1 + n2 + n3
 
 df_sample_normalized_T1T2T3T4_2 <- df_sample_normalized_T1T2T3T4[,4:47]
 mcshapiro.test(df_sample_normalized_T1T2T3T4_2)
-#principal component analysis to plot the data 
-pc.df_sample_normalized_T1T2T3T4 <- princomp(df_sample_normalized_T1T2T3T4_2)
-pc.df_sample_normalized_T1T2T3T4
-
-#plot of the loadings
-load.df_sample_normalized_T1T2T3T4 <- pc.df_sample_normalized_T1T2T3T4$loadings
-load.df_sample_normalized_T1T2T3T4
-
-x11()
-par(mar = c(1,4,0,2), mfrow = c(3,1))
-for (i in 1:3) barplot(load.df_sample_normalized_T1T2T3T4[,i], ylim = c(-1,1), main = paste('loadings PC', i, sep = ''))
-###########FARE
-#plot the data
-#prima fare pca per vedere cosa bisogna plottare
 
 s1 <- cov(df_sample_normalized_T1T2T3T4_2[i1,])
 s2 <- cov(df_sample_normalized_T1T2T3T4_2[i2,])
@@ -45,9 +29,6 @@ Sp <-((n1-1)*s1+(n2-1)*s2+(n3-1)*s3)/(n-g)
 #lda
 T1T2T3T4.lda <- lda(df_sample_normalized_T1T2T3T4_2, diphtongs_names)
 T1T2T3T4.lda
-
-######ALCUNE COSE
-############
 
 T1T2T3T4.Lda <- predict(T1T2T3T4.lda, df_sample_normalized_T1T2T3T4_2)
 
@@ -74,17 +55,14 @@ errorsCV.lda <- (diphtongs_names != T1T2T3T4_CV.lda$class)
 AERCV.lda <- sum(errorsCV.lda)/length(diphtongs_names)
 AERCV.lda
 
-#########
-#####PLOT PARTITION AND CONTOUR
-####PRIOR AND POSTERIOR?
 
-#QDA
+#QDA on T1 and T2
 #we scale the values of the groups, otherwise the values are too low to perform QDA
 #diphtongs_names<-scale(diphtongs_names)
-T1T2T3T4.qda <- qda(df_sample_normalized_T1T2T3T4_2, diphtongs_names)
+T1T2T3T4.qda <- qda(df_sample_normalized_T1T2T3T4_2[,23:44], diphtongs_names)
 T1T2T3T4.qda
 
-T1T2T3T4.Qda <- predict(T1T2T3T4.qda, df_sample_normalized_T1T2T3T4_2)
+T1T2T3T4.Qda <- predict(T1T2T3T4.qda, df_sample_normalized_T1T2T3T4_2[,23:44])
 T1T2T3T4.Qda
 
 #compute the APER
@@ -97,7 +75,7 @@ errors.qda <- (diphtongs_names != T1T2T3T4.Qda$class)
 APER.qda <- sum(errors.qda)/length(diphtongs_names)
 APER.qda
 
-#compute the AER
+#compute the AER - NON VA BENE
 T1T2T3T4_CV.qda <- qda(df_sample_normalized_T1T2T3T4_2, diphtongs_names = T)
 T1T2T3T4_CV.qda
 
@@ -108,8 +86,3 @@ errorsCV.qda <- (diphtongs_names != T1T2T3T4_CV.qda$class)
 AER.qda <- sum(errorsCV.qda)/length(diphtongs_names)
 AER.qda
 
-#knn
-library(class)
-k <- 7
-T1T2T3T4.knn <- knn(train = df_sample_normalized_T1T2T3T4_2, test = df_sample_normalized_T1T2T3T4_2, cl = df_sample_normalized_T1T2T3T4$diphtong, k = k)
-T1T2T3T4.knn
